@@ -8,7 +8,7 @@
 
 ## What is FireDoc?
 
-Firefox’s built-in PDF viewer is solid, but its browser interface can feel cluttered for reading. FireDoc fixes that by being fully standalone—built with Electron and PDF.js—with no Firefox, no browser UI, no cloud services, and no tracking. Just a clean, lightweight app that runs entirely on your device, giving you a fast, distraction-free way to read and edit PDFs.
+Firefox’s built-in PDF viewer is solid, but its browser interface can feel cluttered for reading. FireDoc fixes that by being fully standalone built with Electron and PDF.js with no Firefox, no browser UI, no cloud services, and no tracking. Just a clean, lightweight app that runs entirely on your device, giving you a fast, distraction free way to read and edit PDFs.
 
 ##  Features
 
