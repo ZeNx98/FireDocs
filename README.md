@@ -21,7 +21,7 @@ Firefox’s built-in PDF viewer is solid, but its browser interface can feel clu
   
 ---
 
-## 🖼️ Screenshots
+## Screenshots
 
 <p align="center">
   <img src="img/screenshot1.png" width="400">
@@ -34,11 +34,11 @@ Firefox’s built-in PDF viewer is solid, but its browser interface can feel clu
 
 ---
 
-## 🚀 Quick Install
+##  Quick Install
 
 **The easiest way to install FireDoc is to download a pre-built release:**
 
-👉 **[Download FireDoc from Releases](https://github.com/ZeNx98/FireDoc/releases)**
+ **[Download FireDoc from Releases](https://github.com/ZeNx98/FireDoc/releases)**
 
 Choose the installer for your operating system:
 - **Linux**: `.deb` (Debian/Ubuntu) or `.AppImage` (universal)
@@ -86,7 +86,7 @@ chmod +x FireDoc-2.0.0-x86_64.AppImage
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 **Contributions are welcome!** We'd especially love help with:
 
@@ -111,10 +111,6 @@ FireDoc uses **Mozilla PDF.js** which is licensed under Apache 2.0. See `pdfjs/L
 - Built with **[Mozilla PDF.js](https://github.com/mozilla/pdf.js)** — Industry-leading PDF rendering
 - Built with **[Electron](https://www.electronjs.org/)** — Cross-platform desktop framework
 - Inspired by Firefox's clean, minimalist design philosophy
-
----
-
-Project is vibe coded
 
 ---
 
