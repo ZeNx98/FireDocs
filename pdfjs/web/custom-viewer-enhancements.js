@@ -1,16 +1,16 @@
 // FireDoc Custom PDF.js Viewer Enhancements
 // Additional functionality and UX improvements
 
-(function() {
+(function () {
   'use strict';
 
   // Wait for PDF.js to fully load
-  document.addEventListener('DOMContentLoaded', function() {
-    
+  document.addEventListener('DOMContentLoaded', function () {
+
     // Add Home button functionality
     const homeButton = document.getElementById('homeButton');
     if (homeButton) {
-      homeButton.addEventListener('click', function() {
+      homeButton.addEventListener('click', function () {
         // In Electron, load the startpage
         if (window.location.protocol === 'file:') {
           // Go up from pdfjs/web/ to project root and open homepage.html
@@ -22,38 +22,10 @@
       });
       console.log('🏠 Home button initialized');
     }
- 
+
     // Enhanced keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-      // Ctrl/Cmd + 0: Fit to page width
-      if ((e.ctrlKey || e.metaKey) && e.key === '0') {
-        e.preventDefault();
-        const scaleSelect = document.getElementById('scaleSelect');
-        if (scaleSelect) {
-          scaleSelect.value = 'page-width';
-          scaleSelect.dispatchEvent(new Event('change'));
-        }
-      }
-
-      // Ctrl/Cmd + 1: Actual size
-      if ((e.ctrlKey || e.metaKey) && e.key === '1') {
-        e.preventDefault();
-        const scaleSelect = document.getElementById('scaleSelect');
-        if (scaleSelect) {
-          scaleSelect.value = 'page-actual';
-          scaleSelect.dispatchEvent(new Event('change'));
-        }
-      }
-
-      // Ctrl/Cmd + 2: Fit to page
-      if ((e.ctrlKey || e.metaKey) && e.key === '2') {
-        e.preventDefault();
-        const scaleSelect = document.getElementById('scaleSelect');
-        if (scaleSelect) {
-          scaleSelect.value = 'page-fit';
-          scaleSelect.dispatchEvent(new Event('change'));
-        }
-      }
+    document.addEventListener('keydown', function (e) {
+      // Zoom shortcuts removed to use native browser/PDF.js behavior (User request)
 
       // Home key: Go to first page
       if (e.key === 'Home' && !e.shiftKey && !e.ctrlKey) {
@@ -79,8 +51,13 @@
       // F key: Toggle find bar
       if (e.key === 'f' && !e.ctrlKey && !e.metaKey && !e.altKey) {
         const activeElement = document.activeElement;
-        if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
-          return; // Don't trigger if typing in input
+        // Check for inputs, textareas, OR any contentEditable element (like FreeText annotations)
+        if (activeElement && (
+          activeElement.tagName === 'INPUT' ||
+          activeElement.tagName === 'TEXTAREA' ||
+          activeElement.isContentEditable
+        )) {
+          return; // Don't trigger if typing
         }
         e.preventDefault();
         const findButton = document.getElementById('viewFindButton');
@@ -101,10 +78,10 @@
     });
 
     // Add page transition animations
-    const observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
+    const observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
         if (mutation.addedNodes.length) {
-          mutation.addedNodes.forEach(function(node) {
+          mutation.addedNodes.forEach(function (node) {
             if (node.classList && node.classList.contains('page')) {
               node.style.animation = 'pageLoad 0.3s ease';
             }
@@ -121,10 +98,10 @@
     // Add tooltip for zoom percentage
     const scaleSelect = document.getElementById('scaleSelect');
     if (scaleSelect) {
-      scaleSelect.addEventListener('change', function() {
+      scaleSelect.addEventListener('change', function () {
         const value = this.value;
         let tooltip = '';
-        switch(value) {
+        switch (value) {
           case 'auto': tooltip = 'Automatic Zoom'; break;
           case 'page-actual': tooltip = '100% (Actual Size)'; break;
           case 'page-fit': tooltip = 'Fit to Page'; break;
@@ -139,17 +116,17 @@
     const pageNumber = document.getElementById('pageNumber');
     if (pageNumber) {
       // Select all text when focused for easy input
-      pageNumber.addEventListener('focus', function() {
+      pageNumber.addEventListener('focus', function () {
         this.select();
       });
 
       // Add visual feedback for invalid page numbers
-      pageNumber.addEventListener('change', function() {
+      pageNumber.addEventListener('change', function () {
         const numPages = document.getElementById('numPages');
         if (numPages) {
           const maxPages = parseInt(numPages.textContent);
           const currentPage = parseInt(this.value);
-          
+
           if (currentPage < 1 || currentPage > maxPages) {
             this.style.borderColor = '#f04747';
             this.style.background = 'rgba(240, 71, 71, 0.1)';
@@ -182,32 +159,14 @@
     // Double-click on page to toggle fit modes
     const viewerContainer = document.getElementById('viewerContainer');
     if (viewerContainer) {
-      let lastClickTime = 0;
-      viewerContainer.addEventListener('click', function(e) {
-        const currentTime = new Date().getTime();
-        const timeDiff = currentTime - lastClickTime;
-        
-        if (timeDiff < 300 && timeDiff > 0) { // Double click detected
-          const scaleSelect = document.getElementById('scaleSelect');
-          if (scaleSelect) {
-            const currentValue = scaleSelect.value;
-            // Toggle between page-width and page-fit
-            if (currentValue === 'page-width') {
-              scaleSelect.value = 'page-fit';
-            } else {
-              scaleSelect.value = 'page-width';
-            }
-            scaleSelect.dispatchEvent(new Event('change'));
-          }
-        }
-        lastClickTime = currentTime;
-      });
+      // Double-click to zoom disabled (User request)
+      // const viewerContainer defined above for other uses
     }
 
     // Add current page highlight in sidebar thumbnails
     const thumbnailView = document.getElementById('thumbnailView');
     if (thumbnailView) {
-      const highlightCurrentThumbnail = function() {
+      const highlightCurrentThumbnail = function () {
         const pageNumber = document.getElementById('pageNumber');
         if (pageNumber) {
           const currentPage = parseInt(pageNumber.value);
@@ -231,12 +190,12 @@
     let totalPages = 0;
     const numPagesElement = document.getElementById('numPages');
     if (numPagesElement) {
-      const numPagesObserver = new MutationObserver(function(mutations) {
+      const numPagesObserver = new MutationObserver(function (mutations) {
         const numPages = parseInt(numPagesElement.textContent);
         if (numPages > 0 && totalPages !== numPages) {
           totalPages = numPages;
           console.log(`📄 FireDoc: Loaded PDF with ${totalPages} pages`);
-          
+
           // Show notification for large PDFs
           if (totalPages > 100) {
             showNotification(`Large PDF loaded: ${totalPages} pages`);
@@ -265,7 +224,7 @@
         font-weight: 500;
         animation: slideInRight 0.3s ease, fadeOut 0.3s ease ${duration - 300}ms forwards;
       `;
-      
+
       const style = document.createElement('style');
       style.textContent = `
         @keyframes slideInRight {
@@ -287,7 +246,7 @@
       `;
       document.head.appendChild(style);
       document.body.appendChild(notification);
-      
+
       setTimeout(() => {
         notification.remove();
         style.remove();
@@ -303,7 +262,7 @@
     }
 
     // Add document title from PDF metadata
-    window.addEventListener('documentloaded', function() {
+    window.addEventListener('documentloaded', function () {
       setTimeout(() => {
         const title = document.title;
         if (title && title !== 'PDF.js viewer') {
@@ -315,7 +274,7 @@
     // Enhanced print button
     const printButton = document.getElementById('printButton');
     if (printButton) {
-      printButton.addEventListener('click', function() {
+      printButton.addEventListener('click', function () {
         showNotification('Preparing document for printing...');
       });
     }
@@ -323,8 +282,68 @@
     // Enhanced download button
     const downloadButton = document.getElementById('downloadButton');
     if (downloadButton) {
-      downloadButton.addEventListener('click', function() {
+      downloadButton.addEventListener('click', function () {
         showNotification('Download started...');
+      });
+    }
+
+    // --- Right-Click Pan Support (Global Hand Tool) ---
+    // Allows panning with right-click regardless of selected tool
+    if (viewerContainer) {
+      let isRightPanning = false;
+      let panStartX = 0;
+      let panStartY = 0;
+      let panStartScrollLeft = 0;
+      let panStartScrollTop = 0;
+      let hasDragged = false;
+      const DEADZONE = 5; // Pixels to move before panning starts
+
+      viewerContainer.addEventListener('mousedown', function (e) {
+        if (e.button === 2) { // Right Click
+          isRightPanning = true;
+          hasDragged = false;
+          panStartX = e.clientX;
+          panStartY = e.clientY;
+          panStartScrollLeft = viewerContainer.scrollLeft;
+          panStartScrollTop = viewerContainer.scrollTop;
+          // Note: We don't prevent default here to allow context menu if no drag occurs
+        }
+      });
+
+      window.addEventListener('mousemove', function (e) {
+        if (!isRightPanning) return;
+
+        const dx = e.clientX - panStartX;
+        const dy = e.clientY - panStartY;
+
+        // Check if moved enough to consider it a drag
+        if (!hasDragged && (Math.abs(dx) > DEADZONE || Math.abs(dy) > DEADZONE)) {
+          hasDragged = true;
+          viewerContainer.style.cursor = 'grabbing';
+          document.body.style.userSelect = 'none'; // Prevent text selection while panning
+        }
+
+        if (hasDragged) {
+          viewerContainer.scrollLeft = panStartScrollLeft - dx;
+          viewerContainer.scrollTop = panStartScrollTop - dy;
+          e.preventDefault();
+        }
+      });
+
+      window.addEventListener('mouseup', function (e) {
+        if (isRightPanning && e.button === 2) {
+          isRightPanning = false;
+          viewerContainer.style.cursor = '';
+          document.body.style.userSelect = '';
+        }
+      });
+
+      // Always prevent context menu globally (User request)
+      document.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        hasDragged = false; // Reset to be safe
+        return false;
       });
     }
 

@@ -2,62 +2,18 @@
   "name": "firedoc",
   "productName": "FireDoc",
   "version": "2.0.0",
-  "description": "FireDoc: Electron app that loads the bundled pdf.js viewer (pdfjs/web/viewer.html)",
-  "main": "main.js",
+  "description": "FireDoc: Minimalist PDF Viewer",
   "private": true,
   "author": "ZeNx98 <zenx98x@gmail.com> (https://github.com/ZeNx98)",
   "homepage": "https://github.com/ZeNx98/FireDoc",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ZeNx98/FireDoc.git"
-  },
-  "bugs": {
-    "url": "https://github.com/ZeNx98/FireDoc/issues",
-    "email": "zenx98x@gmail.com"
-  },
+  "type": "module",
   "scripts": {
-    "start": "electron .",
-    "dist": "electron-builder",
-    "dist:linux": "electron-builder --linux",
-    "dist:deb": "electron-builder --linux deb",
-    "dist:appimage": "electron-builder --linux AppImage",
-    "dist:arch": "electron-builder --linux pacman"
+    "tauri": "tauri"
   },
   "devDependencies": {
-    "electron": "^31.0.0",
-    "electron-builder": "^24.13.3"
+    "@tauri-apps/cli": "^1.5.0"
   },
-  "build": {
-    "appId": "com.znx.firedoc",
-    "productName": "FireDoc",
-    "fileAssociations": [
-      {
-        "ext": "pdf",
-        "name": "PDF document",
-        "description": "Portable Document Format",
-        "role": "Viewer",
-        "mimeType": "application/pdf"
-      }
-    ],
-    "files": [
-      "**/*",
-      "!node_modules/.cache/**"
-    ],
-    "asar": true,
-    "artifactName": "FireDoc-${version}-${arch}.${ext}",
-    "linux": {
-      "target": [
-        "deb",
-        "AppImage"
-      ],
-      "category": "Utility",
-      "desktop": {
-        "Name": "FireDoc",
-        "Comment": "Minimalist PDF Viewer",
-        "Categories": "Office;Viewer;Graphics;",
-        "MimeType": "application/pdf;"
-      },
-      "icon": "icon.png"
-    }
+  "dependencies": {
+    "@tauri-apps/api": "^1.5.0"
   }
 }

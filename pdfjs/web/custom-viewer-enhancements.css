@@ -1,552 +1,147 @@
 /* FireDoc Custom PDF.js Viewer Enhancements */
-/* Modern, sleek design with improved functionality */
+/* RESET STATE: Firefox Dark Theme + Orange Accent ONLY */
+/* Standard Layout - No experimental positioning */
 
 :root {
-  /* Custom Color Scheme - Dark Theme */
-  --body-bg-color: #1a1a1a !important;
-  --sidebar-bg-color: #2b2a33 !important;
-  --toolbar-bg-color: #2b2a33 !important;
-  --toolbar-border-color: #3c4043 !important;
-  --button-hover-color: #5865f2 !important;
-  --main-color: #e8e6e3 !important;
-  --doorhanger-bg-color: #2b2a33 !important;
-  --doorhanger-border-color: #3c4043 !important;
-  --scrollbar-color: #5a5d62 !important;
-  --scrollbar-bg-color: #2b2a33 !important;
-  
-  /* Enhanced spacing */
-  --toolbar-icon-opacity: 0.9;
-  --doorhanger-triangle-opacity-over: 1;
+  /* Firefox Dark Colors */
+  --bg-dark: #1C1B22;
+  --bg-panel: #2B2A33;
+  --bg-hover: #42414d;
+  --border: #52525e;
+
+  /* Accent: Orange */
+  --accent: #ff5e00;
+  --accent-faint: rgba(255, 94, 0, 0.15);
+  --accent-strong: rgba(255, 94, 0, 0.25);
+
+  /* Text */
+  --text-main: #fbfbfe;
+
+  /* PDF.js Variable Overrides */
+  --body-bg-color: var(--bg-dark) !important;
+  --sidebar-bg-color: var(--bg-panel) !important;
+  --toolbar-bg-color: var(--bg-panel) !important;
+  --toolbar-border-color: var(--border) !important;
+  --button-hover-color: var(--accent) !important;
+  --doorhanger-bg-color: var(--bg-panel) !important;
+  --doorhanger-border-color: var(--border) !important;
+  --main-color: var(--text-main) !important;
+  --scrollbar-bg-color: var(--bg-panel) !important;
+  --scrollbar-color: #cfcfd8 !important;
 }
 
-/* Apply IBM Plex Sans Arabic font to match startpage */
+/* Typography */
 body,
 button,
 input,
 select,
-textarea,
-.toolbarButton,
-.toolbarLabel,
-.toolbarField {
-  font-family: 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+textarea {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
 }
 
-/* Body and container improvements */
-#outerContainer {
-  background: var(--body-bg-color);
-}
+/* --- Theme Appliers (Colors Only) --- */
 
-#viewerContainer {
-  background: linear-gradient(135deg, #1f1e26 0%, #1a1a1a 100%);
-}
-
-/* Toolbar enhancements */
-#toolbarContainer {
-  background: var(--toolbar-bg-color);
-  border-bottom: 1px solid var(--toolbar-border-color);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.toolbarButton {
-  border-radius: 6px !important;
-  transition: all 0.2s ease !important;
-  margin: 2px !important;
-}
-
+/* Toolbar Buttons */
 .toolbarButton:hover {
-  background-color: rgba(88, 101, 242, 0.15) !important;
-  transform: translateY(-1px);
+  background-color: var(--accent-faint) !important;
+  color: var(--accent) !important;
 }
 
+.toolbarButton.toggled,
 .toolbarButton:active {
-  transform: translateY(0);
+  background-color: var(--accent-strong) !important;
+  color: var(--accent) !important;
 }
 
-.toolbarButton::before {
-  opacity: var(--toolbar-icon-opacity);
-  transition: opacity 0.2s ease;
-}
-
-.toolbarButton:hover::before {
-  opacity: 1;
-}
-
-/* Page navigation buttons enhancement */
-#previous,
-#next {
-  font-weight: 600;
-  padding: 8px 12px;
-}
-
-/* Zoom controls enhancement */
-#zoomInButton,
-#zoomOutButton {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-#scaleSelect {
-  background: rgba(88, 101, 242, 0.1);
-  border: 1px solid var(--toolbar-border-color);
-  border-radius: 6px;
-  padding: 6px 10px;
-  color: var(--main-color);
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-#scaleSelect:hover {
-  background: rgba(88, 101, 242, 0.2);
-  border-color: #5865f2;
-}
-
-#scaleSelect:focus {
-  outline: 2px solid #5865f2;
-  outline-offset: 2px;
-}
-
-/* Page number input enhancement */
-#pageNumber {
-  background: rgba(88, 101, 242, 0.1);
-  border: 1px solid var(--toolbar-border-color);
-  border-radius: 6px;
-  color: var(--main-color);
-  font-weight: 600;
-  text-align: center;
-  transition: all 0.2s ease;
-}
-
-#pageNumber:hover {
-  background: rgba(88, 101, 242, 0.2);
-  border-color: #5865f2;
-}
-
-#pageNumber:focus {
-  background: rgba(88, 101, 242, 0.25);
-  border-color: #5865f2;
-  outline: 2px solid rgba(88, 101, 242, 0.4);
-  outline-offset: 2px;
-}
-
-/* Sidebar enhancements */
-#sidebarContainer {
-  background: var(--sidebar-bg-color);
-  border-right: 1px solid var(--toolbar-border-color);
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
-}
-
-#sidebarContent {
-  background: var(--sidebar-bg-color);
-}
-
-.thumbnail {
-  border-radius: 6px;
-  border: 2px solid transparent;
-  transition: all 0.2s ease;
-  margin: 4px;
-}
-
-.thumbnail:hover {
-  border-color: rgba(88, 101, 242, 0.5);
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
-}
-
+/* Sidebar Thumbnails */
 .thumbnail.selected {
-  border-color: #5865f2;
-  box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.2);
+  border-color: var(--accent) !important;
 }
 
-/* Search bar enhancements */
+.thumbnail.selected>.thumbnailSelectionRing {
+  background: var(--accent) !important;
+}
+
+/* Inputs */
+.toolbarField {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--border) !important;
+  color: var(--text-main) !important;
+}
+
+.toolbarField:focus {
+  border-color: var(--accent) !important;
+  outline: none;
+}
+
+/* Find Bar */
 #findbar {
-  background: var(--toolbar-bg-color);
-  border: 1px solid var(--toolbar-border-color);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  padding: 8px;
+  background-color: var(--bg-panel) !important;
+  border-color: var(--border) !important;
+  color: var(--text-main) !important;
 }
 
-#findInput {
-  background: rgba(88, 101, 242, 0.1);
-  border: 1px solid var(--toolbar-border-color);
-  border-radius: 6px;
-  color: var(--main-color);
-  padding: 8px 12px;
-  font-size: 14px;
-  transition: all 0.2s ease;
+/* --- Added Tools Enhancements --- */
+
+/* Cursor Tools Group */
+#cursorToolButtons {
+  display: flex;
+  align-items: center;
+  margin: 0 4px;
 }
 
-#findInput:focus {
-  background: rgba(88, 101, 242, 0.2);
-  border-color: #5865f2;
-  outline: 2px solid rgba(88, 101, 242, 0.4);
-  outline-offset: 2px;
+/* Find Bar */
+#findbar {
+  background-color: var(--bg-panel) !important;
+  border-color: var(--border) !important;
+  color: var(--text-main) !important;
 }
 
-.findButton {
-  border-radius: 6px;
-  transition: all 0.2s ease;
+/* Download/Save Button Icon - Folder/Box with Down Arrow */
+#downloadButton::before,
+#secondaryDownload::before {
+  -webkit-mask-image: url(images/toolbarButton-download.svg) !important;
+  mask-image: url(images/toolbarButton-download.svg) !important;
 }
 
-.findButton:hover {
-  background: rgba(88, 101, 242, 0.2);
-  transform: translateY(-1px);
-}
-
-/* PDF page rendering improvements */
-.page {
-  margin: 12px auto;
-  border-radius: 4px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  /* Removed transition to prevent zoom animation lag */
-}
-
-.page:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-}
-
-/* Scrollbar styling */
-/* Global, consistent, smooth scrollbars */
-/* Chromium-based styling */
-body::-webkit-scrollbar,
-#outerContainer::-webkit-scrollbar,
-#viewerContainer::-webkit-scrollbar,
-#sidebarContent::-webkit-scrollbar,
-#thumbnailView::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
-}
-
-body::-webkit-scrollbar-track,
-#outerContainer::-webkit-scrollbar-track,
-#viewerContainer::-webkit-scrollbar-track,
-#sidebarContent::-webkit-scrollbar-track,
-#thumbnailView::-webkit-scrollbar-track {
-  background: var(--scrollbar-bg-color);
-  border-radius: 8px;
-}
-
-body::-webkit-scrollbar-thumb,
-#outerContainer::-webkit-scrollbar-thumb,
-#viewerContainer::-webkit-scrollbar-thumb,
-#sidebarContent::-webkit-scrollbar-thumb,
-#thumbnailView::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--scrollbar-color), rgba(88, 101, 242, 0.65));
-  border-radius: 8px;
-  border: 2px solid var(--scrollbar-bg-color);
-  transition: background 0.2s ease, box-shadow 0.2s ease;
-}
-
-body::-webkit-scrollbar-thumb:hover,
-#outerContainer::-webkit-scrollbar-thumb:hover,
-#viewerContainer::-webkit-scrollbar-thumb:hover,
-#sidebarContent::-webkit-scrollbar-thumb:hover,
-#thumbnailView::-webkit-scrollbar-thumb:hover {
-  background: #5865f2;
-  box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.25) inset;
-}
-
-body::-webkit-scrollbar-corner,
-#outerContainer::-webkit-scrollbar-corner,
-#viewerContainer::-webkit-scrollbar-corner,
-#sidebarContent::-webkit-scrollbar-corner,
-#thumbnailView::-webkit-scrollbar-corner {
-  background: var(--scrollbar-bg-color);
-}
-
-/* Firefox (has limited support, but helps if used in a browser context) */
-* {
-  scrollbar-color: var(--scrollbar-color) var(--scrollbar-bg-color);
-  scrollbar-width: thin;
-}
-
-/* Loading indicator enhancement */
-#loadingBar {
-  background: linear-gradient(90deg, #5865f2 0%, #4752c4 100%);
-  height: 3px;
-  border-radius: 3px;
-  box-shadow: 0 0 10px rgba(88, 101, 242, 0.6);
-}
-
-/* Context menu enhancement */
-.context-menu {
-  background: var(--doorhanger-bg-color);
-  border: 1px solid var(--doorhanger-border-color);
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  overflow: hidden;
-}
-
-/* Print button highlight */
-#printButton,
-#secondaryPrint {
-  background: rgba(67, 181, 129, 0.15);
-}
-
-#printButton:hover,
-#secondaryPrint:hover {
-  background: rgba(67, 181, 129, 0.25);
-}
-
-/* Download button highlight */
-#downloadButton,
-#secondaryDownload {
-  background: rgba(88, 101, 242, 0.15);
-}
-
-#downloadButton:hover,
-#secondaryDownload:hover {
-  background: rgba(88, 101, 242, 0.25);
-}
-
-/* Presentation mode button */
-#presentationMode {
-  background: rgba(240, 71, 71, 0.15);
-}
-
-#presentationMode:hover {
-  background: rgba(240, 71, 71, 0.25);
-}
-
-/* Secondary toolbar enhancements */
-#secondaryToolbar {
-  background: var(--toolbar-bg-color);
-  border: 1px solid var(--toolbar-border-color);
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  padding: 8px;
-}
-
-.secondaryToolbarButton {
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  padding: 8px;
-}
-
-.secondaryToolbarButton:hover {
-  background: rgba(88, 101, 242, 0.2);
-  transform: translateX(4px);
-}
-
-/* Toggle sidebar button */
-#sidebarToggleButton {
-  background: rgba(88, 101, 242, 0.15);
-}
-
-#sidebarToggleButton:hover {
-  background: rgba(88, 101, 242, 0.25);
-}
-
-/* Home button styling */
+/* Home Button Icon Style */
 #homeButton {
-  background: rgba(240, 71, 71, 0.2) !important;
-  padding: 4px 8px;
-  min-width: 32px;
-  height: 32px;
-}
-
-#homeButton:hover {
-  background: rgba(240, 71, 71, 0.35) !important;
-  transform: scale(1.05);
-}
-
-#homeButton:active {
-  background: rgba(240, 71, 71, 0.5) !important;
-  transform: scale(1.0);
-}
-
-#homeButton span {
-  display: inline-block !important;
-  width: 16px !important;
-  height: 16px !important;
-  background-color: white !important;
-  mask-image: url(images/comment-closeButton.svg) !important;
-  -webkit-mask-image: url(images/comment-closeButton.svg) !important;
-  mask-size: cover !important;
-  -webkit-mask-size: cover !important;
-  mask-repeat: no-repeat !important;
-  -webkit-mask-repeat: no-repeat !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
 }
 
 #homeButton::before {
+  display: none !important;
   content: none !important;
 }
 
-/* Text selection highlight */
-::selection {
-  background: rgba(88, 101, 242, 0.4);
-  color: #fff;
+#homeButton svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--text-main);
+  stroke-width: 2px;
+  transition: stroke 0.2s ease;
 }
 
-::-moz-selection {
-  background: rgba(88, 101, 242, 0.4);
-  color: #fff;
+#homeButton:hover svg {
+  stroke: var(--accent);
 }
 
-/* Annotation tools enhancement */
-.annotationLayer section {
-  border-radius: 4px;
+/* Secondary Toolbar */
+
+/* Secondary Toolbar */
+#secondaryToolbar {
+  background-color: var(--bg-panel) !important;
+  border-color: var(--border) !important;
 }
 
-/* Link hover effect */
-.annotationLayer a:hover {
-  box-shadow: 0 2px 8px rgba(88, 101, 242, 0.4);
+.secondaryToolbarButton:hover {
+  background-color: var(--accent-faint) !important;
+  color: var(--accent) !important;
 }
 
-/* Error message styling */
-#errorWrapper {
-  background: linear-gradient(135deg, #2b2a33 0%, #1f1e26 100%);
-  border-radius: 8px;
-  padding: 40px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-}
-
-#errorMessage {
-  color: #f04747;
-  font-weight: 600;
-  font-size: 16px;
-}
-
-/* Smooth transitions for UI elements only (not pages/canvas) */
-button,
-input,
-select,
-.toolbarButton,
-.thumbnail {
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Improved focus indicators for accessibility */
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 2px solid #5865f2;
-  outline-offset: 2px;
-}
-
-/* Enhanced dropdown menus */
-select {
-  cursor: pointer;
-}
-
-/* Tooltip improvements */
-.toolbarButton[title]:hover::after {
-  animation: tooltipFadeIn 0.2s ease;
-}
-
-@keyframes tooltipFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Responsive improvements */
-@media (max-width: 900px) {
-  .toolbarButton {
-    margin: 1px !important;
-  }
-  
-  #scaleSelect {
-    padding: 4px 6px;
-  }
-}
-
-/* Print preview enhancements */
-@media print {
-  .page {
-    margin: 0;
-    box-shadow: none;
-  }
-}
-
-/* Page transition animation */
-.page {
-  animation: pageLoad 0.3s ease;
-}
-
-@keyframes pageLoad {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Highlight current page in thumbnails */
-.thumbnail.selected > .thumbnailSelectionRing {
-  background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
-}
-
-/* Improve button icons visibility */
-.toolbarButton::before {
-  filter: brightness(1.2);
-}
-
-/* Enhanced page number display */
-#numPages {
-  color: rgba(232, 230, 227, 0.7);
-  font-weight: 500;
-}
-
-/* Zoom percentage display */
-#scaleSelectContainer {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-/* Improve contrast for better readability */
-.toolbarLabel {
-  color: var(--main-color);
-  font-weight: 500;
-  opacity: 0.9;
-}
-
-/* Loading spinner enhancement */
-.loadingIcon {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Message bar improvements */
-.messageBar {
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Enhance find results highlighting */
-.highlight {
-  background: rgba(88, 101, 242, 0.3);
-  border-radius: 2px;
-  box-shadow: 0 0 4px rgba(88, 101, 242, 0.5);
-}
-
-.highlight.selected {
-  background: rgba(88, 101, 242, 0.6);
-  box-shadow: 0 0 8px rgba(88, 101, 242, 0.8);
+/* Loading Bar */
+#loadingBar {
+  background-color: var(--accent) !important;
 }
