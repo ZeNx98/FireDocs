@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FireDoc</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap">
+    <style>
+        :root {
+            --bg-color: #0F0F0F;
+            --surface-color: #1A1A1A;
+            --surface-hover: #262626;
+
+            /* Orange/Fire Theme */
+            --primary-gradient: linear-gradient(135deg, #FF9966 0%, #FF5E62 100%);
+            --primary-color: #FF5E62;
+            --primary-glow: rgba(255, 94, 98, 0.4);
+
+            --text-primary: #FFFFFF;
+            --text-secondary: #AAAAAA;
+
+            --border-radius: 16px;
+            --transition: all 0.2s ease;
+            /* Faster, simpler transition */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(255, 94, 98, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 153, 102, 0.05) 0%, transparent 40%);
+        }
+
+        /* Header */
+        header {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 1rem;
+            /* Removed animation */
+        }
+
+        .header-controls {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: var(--text-secondary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            /* Removed hover effects */
+            cursor: default;
+        }
+
+        .brand-icon {
+            width: 80px;
+            height: 80px;
+            /* Removed filter drop-shadow animation/transform */
+            filter: drop-shadow(0 0 25px rgba(255, 94, 98, 0.4));
+        }
+
+        /* Removed brand hover transform */
+
+        .brand-text {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.03em;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 1rem 2rem;
+            gap: 3rem;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            box-sizing: border-box;
+            overflow-y: auto;
+            /* Removed animation */
+        }
+
+        /* Hero / Drop Zone */
+        .drop-zone {
+            width: 100%;
+            max-width: 700px;
+            height: 300px;
+            background: rgba(30, 30, 30, 0.6);
+            backdrop-filter: blur(12px);
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.drag-over {
+            border-color: var(--primary-color);
+            background: rgba(30, 30, 30, 0.8);
+            /* Removed transform scale */
+            box-shadow: 0 0 40px rgba(255, 94, 98, 0.2);
+        }
+
+        .drop-content {
+            text-align: center;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .drop-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+        }
+
+        .drop-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .drop-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .btn-browse {
+            margin-top: 2rem;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 8px 20px rgba(255, 94, 98, 0.3);
+            pointer-events: auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-browse:hover {
+            opacity: 0.9;
+            /* Removed transform */
+            box-shadow: 0 12px 25px rgba(255, 94, 98, 0.4);
+        }
+
+        /* Recents */
+        .recents-container {
+            width: 100%;
+            max-width: 700px;
+            margin-bottom: 2rem;
+            /* Removed animation */
+        }
+
+        .recents-header {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .recents-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .recents-title::after {
+            content: '';
+            height: 1px;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-clear-all {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: var(--transition);
+            margin-left: 10px;
+        }
+
+        .btn-clear-all:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--primary-color);
+        }
+
+        .recents-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .recent-card {
+            background: var(--surface-color);
+            padding: 1.2rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .recent-card:hover {
+            background: var(--surface-hover);
+            /* Removed transform */
+            border-color: rgba(255, 94, 98, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .recent-card:hover .btn-delete-recent {
+            opacity: 1;
+        }
+
+        .recent-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 94, 98, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+
+        .recent-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .recent-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .recent-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.3rem;
+            color: #fff;
+        }
+
+        .recent-path {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Delete button logic */
+        .btn-delete-recent {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: var(--text-secondary);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            opacity: 0;
+            /* Hidden by default */
+        }
+
+        /* On mobile/touch devices, might want to show it always, but for desktop hover is fine */
+
+        .btn-delete-recent:hover {
+            background: #FF4757;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 2rem;
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        /* Footer */
+        footer {
+            padding: 1.5rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .credits {
+            cursor: pointer;
+            transition: color 0.2s;
+            display: inline-block;
+        }
+
+        .credits:hover {
+            color: var(--primary-color);
+        }
+
+        .heart {
+            color: #FF4757;
+            display: inline-block;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: var(--surface-color);
+            padding: 2.5rem;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal h2 {
+            margin-top: 0;
+            color: var(--text-primary);
+        }
+
+        .modal p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .btn-close {
+            margin-top: 1.5rem;
+            background: var(--surface-hover);
+            border: none;
+            color: var(--text-primary);
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-close:hover {
+            background: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-controls">
+            <button class="icon-btn" id="infoBtn" title="About">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="brand">
+            <img src="icon.png" alt="FireDoc Logo" class="brand-icon">
+            <div class="brand-text">FireDoc</div>
+        </div>
+    </header>
+
+    <main>
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-content">
+                <div class="drop-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="url(#gradient)"
+                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#FF9966" />
+                                <stop offset="100%" style="stop-color:#FF5E62" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                </div>
+                <div class="drop-title">Drop your PDF here</div>
+                <div class="drop-subtitle">or select a file to start reading</div>
+                <button class="btn-browse" id="openBtn">Browse Files</button>
+            </div>
+        </div>
+
+        <div class="recents-container">
+            <div class="recents-header">
+                <div class="recents-title">Continue Reading</div>
+                <button class="btn-clear-all" id="clearRecentsBtn" title="Clear Recent Files">Clear All</button>
+            </div>
+            <div class="recents-list" id="recentsList">
+                <div class="empty-state">No recent files found</div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="credits" id="creditsLink">
+            Made with <span class="heart">❤</span> by ZeNx98
+        </div>
+    </footer>
+
+    <!-- About Modal -->
+    <div class="modal-overlay" id="aboutModal">
+        <div class="modal">
+            <h2>FireDoc</h2>
+            <p>Version 3.0.0</p>
+            <p>A minimalist, blazing fast PDF viewer built with Tauri.</p>
+            <button class="btn-close" id="closeModal">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Tauri Integration
+        const invoke = window.__TAURI__?.invoke || ((cmd, args) => { console.log('Mock/Browser invoke:', cmd, args); return Promise.resolve(null); });
+        const listen = window.__TAURI__?.event?.listen || (() => { });
+        const shell = window.__TAURI__?.shell; // Access shell API
+
+        const dropZone = document.getElementById('dropZone');
+        const openBtn = document.getElementById('openBtn');
+        const recentsList = document.getElementById('recentsList');
+        const clearRecentsBtn = document.getElementById('clearRecentsBtn');
+        const infoBtn = document.getElementById('infoBtn');
+        const aboutModal = document.getElementById('aboutModal');
+        const closeModal = document.getElementById('closeModal');
+        const creditsLink = document.getElementById('creditsLink');
+
+        let recents = [];
+
+        async function init() {
+            loadRecents();
+            renderRecents();
+            setupListeners();
+        }
+
+        async function openPdf(path) {
+            try {
+                if (!window.__TAURI__) {
+                    alert('This feature requires the app to be running in Tauri.');
+                    return;
+                }
+
+                addToRecents(path);
+
+                const response = await invoke('prepare_pdf_stream', { path });
+
+                if (response && response.url) {
+                    const viewerUrl = `pdfjs/web/viewer.html?file=${encodeURIComponent(response.url)}`;
+                    window.location.href = viewerUrl;
+                }
+            } catch (err) {
+                console.error('Failed to open PDF:', err);
+                alert('Failed to open PDF: ' + err);
+            }
+        }
+
+        function addToRecents(path) {
+            recents = recents.filter(r => r.path !== path);
+            let name = path.split(/[\\/]/).pop();
+            recents.unshift({ name, path, date: Date.now() });
+            if (recents.length > 6) recents.pop();
+            saveRecents();
+        }
+
+        function loadRecents() {
+            try {
+                const stored = localStorage.getItem('fireDocRecents');
+                if (stored) recents = JSON.parse(stored);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function saveRecents() {
+            localStorage.setItem('fireDocRecents', JSON.stringify(recents));
+        }
+
+        function clearRecents() {
+            if (confirm('Clear all recent files?')) {
+                recents = [];
+                saveRecents();
+                renderRecents();
+            }
+        }
+
+        function removeRecent(index, event) {
+            event.stopPropagation(); // Prevent opening the file
+            if (confirm('Remove this file from recents?')) {
+                recents.splice(index, 1);
+                saveRecents();
+                renderRecents();
+            }
+        }
+
+        // Expose to window for the onclick handler in string template
+        window.removeRecent = removeRecent;
+        window.openPdf = openPdf;
+
+        function renderRecents() {
+            if (recents.length === 0) {
+                recentsList.innerHTML = '<div class="empty-state">No recent files found</div>';
+                clearRecentsBtn.style.display = 'none';
+                return;
+            }
+            clearRecentsBtn.style.display = 'block';
+
+            recentsList.innerHTML = recents.map((file, index) => `
+                <div class="recent-card" onclick="openPdf('${file.path.replace(/\\/g, '\\\\')}')">
+                    <div class="recent-icon">
+                        <svg viewBox="0 0 24 24" width="24" height="24">
+                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="recent-info">
+                        <div class="recent-name">${file.name}</div>
+                        <div class="recent-path">${file.path}</div>
+                    </div>
+                    <button class="btn-delete-recent" title="Remove" onclick="removeRecent(${index}, event)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        async function handleOpenClick() {
+            try {
+                const selectedPath = await invoke('select_pdf');
+                if (selectedPath) openPdf(selectedPath);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function setupListeners() {
+            openBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleOpenClick();
+            });
+
+            dropZone.addEventListener('click', () => handleOpenClick());
+
+            clearRecentsBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                clearRecents();
+            });
+
+            creditsLink.addEventListener('click', () => {
+                const url = 'https://github.com/ZeNx98';
+                if (shell && shell.open) {
+                    shell.open(url);
+                } else {
+                    window.open(url, '_blank');
+                }
+            });
+
+            // Modal
+            infoBtn.addEventListener('click', () => aboutModal.classList.add('active'));
+            closeModal.addEventListener('click', () => aboutModal.classList.remove('active'));
+            aboutModal.addEventListener('click', (e) => {
+                if (e.target === aboutModal) aboutModal.classList.remove('active');
+            });
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('drag-over');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+            });
+
+            if (window.__TAURI__) {
+                listen('tauri://file-drop', event => {
+                    const paths = event.payload;
+                    if (paths && paths.length > 0) {
+                        if (paths[0].toLowerCase().endsWith('.pdf')) {
+                            openPdf(paths[0]);
+                        } else {
+                            alert('Please drop a PDF file.');
+                        }
+                    }
+                });
+            }
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
