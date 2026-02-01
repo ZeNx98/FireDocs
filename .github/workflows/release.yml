@@ -1,0 +1,79 @@
+{
+    "build": {
+        "beforeDevCommand": "",
+        "beforeBuildCommand": "",
+        "devPath": "../web",
+        "distDir": "../web",
+        "withGlobalTauri": true
+    },
+    "package": {
+        "productName": "firedoc",
+        "version": "3.0.0"
+    },
+    "tauri": {
+        "allowlist": {
+            "all": true,
+            "fs": {
+                "all": true,
+                "scope": [
+                    "$HOME/**",
+                    "$APPDATA/**"
+                ]
+            },
+            "protocol": {
+                "all": true,
+                "asset": true,
+                "assetScope": [
+                    "$HOME/**",
+                    "/"
+                ]
+            }
+        },
+        "bundle": {
+            "active": true,
+            "category": "Utility",
+            "copyright": "",
+            "deb": {
+                "depends": []
+            },
+            "externalBin": [],
+            "icon": [
+                "icons/icon.png",
+                "../web/icon.png"
+            ],
+            "identifier": "com.znx.firedoc",
+            "longDescription": "",
+            "macOS": {
+                "entitlements": null,
+                "exceptionDomain": "",
+                "frameworks": [],
+                "providerShortName": null,
+                "signingIdentity": null
+            },
+            "resources": [],
+            "shortDescription": "",
+            "targets": "all",
+            "windows": {
+                "certificateThumbprint": null,
+                "digestAlgorithm": "sha256",
+                "timestampUrl": ""
+            }
+        },
+        "security": {
+            "csp": "default-src 'self' 'unsafe-inline' 'unsafe-eval' tauri: asset: https: data: blob: pdfstream:;"
+        },
+        "updater": {
+            "active": false
+        },
+        "windows": [
+            {
+                "fullscreen": false,
+                "height": 800,
+                "resizable": true,
+                "title": "FireDoc",
+                "width": 1200,
+                "url": "homepage.html"
+            }
+        ]
+    }
+}
