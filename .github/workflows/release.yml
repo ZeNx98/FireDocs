@@ -1,79 +1,85 @@
-{
-    "build": {
-        "beforeDevCommand": "",
-        "beforeBuildCommand": "",
-        "devPath": "../web",
-        "distDir": "../web",
-        "withGlobalTauri": true
-    },
-    "package": {
-        "productName": "firedoc",
-        "version": "3.0.0"
-    },
-    "tauri": {
-        "allowlist": {
-            "all": true,
-            "fs": {
-                "all": true,
-                "scope": [
-                    "$HOME/**",
-                    "$APPDATA/**"
-                ]
-            },
-            "protocol": {
-                "all": true,
-                "asset": true,
-                "assetScope": [
-                    "$HOME/**",
-                    "/"
-                ]
-            }
-        },
-        "bundle": {
-            "active": true,
-            "category": "Utility",
-            "copyright": "",
-            "deb": {
-                "depends": []
-            },
-            "externalBin": [],
-            "icon": [
-                "icons/icon.png",
-                "../web/icon.png"
-            ],
-            "identifier": "com.znx.firedoc",
-            "longDescription": "",
-            "macOS": {
-                "entitlements": null,
-                "exceptionDomain": "",
-                "frameworks": [],
-                "providerShortName": null,
-                "signingIdentity": null
-            },
-            "resources": [],
-            "shortDescription": "",
-            "targets": "all",
-            "windows": {
-                "certificateThumbprint": null,
-                "digestAlgorithm": "sha256",
-                "timestampUrl": ""
-            }
-        },
-        "security": {
-            "csp": "default-src 'self' 'unsafe-inline' 'unsafe-eval' tauri: asset: https: data: blob: pdfstream:;"
-        },
-        "updater": {
-            "active": false
-        },
-        "windows": [
-            {
-                "fullscreen": false,
-                "height": 800,
-                "resizable": true,
-                "title": "FireDoc",
-                "width": 1200,
-                "url": "homepage.html"
-            }
-        ]
-    }
-}
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Install dependencies (ubuntu-only)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run tauri build
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run tauri build
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run tauri build

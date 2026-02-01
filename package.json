@@ -1,7 +1,7 @@
 {
   "name": "firedoc",
   "productName": "FireDoc",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "FireDoc: Minimalist PDF Viewer",
   "private": true,
   "author": "ZeNx98 <zenx98x@gmail.com> (https://github.com/ZeNx98)",
