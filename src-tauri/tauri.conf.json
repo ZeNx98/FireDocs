@@ -2,8 +2,8 @@
     "build": {
         "beforeDevCommand": "",
         "beforeBuildCommand": "",
-        "devPath": "../",
-        "distDir": "../",
+        "devPath": "../web",
+        "distDir": "../web",
         "withGlobalTauri": true
     },
     "package": {
@@ -39,7 +39,7 @@
             "externalBin": [],
             "icon": [
                 "icons/icon.png",
-                "../icon.png"
+                "../web/icon.png"
             ],
             "identifier": "com.znx.firedoc",
             "longDescription": "",

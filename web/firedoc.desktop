@@ -1,0 +1,15 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=FireDoc
+Comment=Minimalist PDF Viewer
+# Update the path if you move the AppImage after building
+Exec=/home/zen/Documents/Coding/FireDoc/newer/FireDoc/dist/FireDoc-2.0.0-x86_64.AppImage %U
+TryExec=/home/zen/Documents/Coding/FireDoc/newer/FireDoc/dist/FireDoc-2.0.0-x86_64.AppImage
+Icon=/home/zen/Documents/Coding/FireDoc/newer/FireDoc/icon.png
+Terminal=false
+Categories=Office;Viewer;Graphics;
+# Primary association is PDFs; extras cover common PostScript/EPS aliases some desktops map to PDF viewers
+MimeType=application/pdf;application/x-bzpdf;application/x-gzpdf;application/postscript;application/illustrator;application/eps;application/x-eps;image/pdf;
+StartupNotify=true
+NoDisplay=false

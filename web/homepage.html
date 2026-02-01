@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FireDoc</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="pdf-loader.js" type="module"></script>
+  <style>
+    :root {
+      /* Firefox Dark Theme (Proton/Photon inspired) */
+      --bg-workspace: #1C1B22;
+      /* Firefox Main Background */
+      --bg-card: #2B2A33;
+      /* Firefox Toolbar/Card Background */
+      --bg-card-hover: #42414d;
+      /* Hover State */
+      --border-color: #52525e;
+      /* Separators */
+      --accent: #ff5e00;
+      /* Firefox Orange Accent */
+      --accent-hover: #ff7b00;
+      --text-main: #fbfbfe;
+      --text-muted: #cfcfd8;
+      --radius: 8px;
+      /* Firefox uses slightly tighter radii depending on OS, 8px is safe */
+      --transition: all 0.2s ease;
+      --glass-border: 1px solid var(--border-color);
+      --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-workspace);
+      color: var(--text-main);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      /* Flat background for Firefox style */
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    .app-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+      height: 100%;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      overflow-y: auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      animation: fade-in-down 0.6s ease-out;
+    }
+
+    .logo-container {
+      margin-bottom: 16px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .logo-img {
+      width: 80px;
+      height: 80px;
+      filter: drop-shadow(0 0 20px rgba(226, 102, 0, 0.4));
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      background: linear-gradient(to right, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+
+    /* Dropzone */
+    .drop-area {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px dashed var(--border-color);
+      border-radius: var(--radius);
+      padding: 60px 20px;
+      text-align: center;
+      transition: var(--transition);
+      cursor: pointer;
+      overflow: hidden;
+      animation: fade-in-up 0.6s 0.2s backwards;
+    }
+
+    .drop-area:hover,
+    .drop-area.drag-over {
+      border-color: var(--accent);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .drop-icon {
+      font-size: 48px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      transition: var(--transition);
+    }
+
+    .drop-area:hover .drop-icon {
+      color: var(--accent);
+      transform: scale(1.1);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-block;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(226, 102, 0, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(226, 102, 0, 0.4);
+    }
+
+    .drop-hint {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Recent Files */
+    .recent-section {
+      width: 100%;
+      text-align: left;
+      animation: fade-in-up 0.6s 0.4s backwards;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 0 8px;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .file-card {
+      background: var(--bg-card);
+      border: 1px solid transparent;
+      border-radius: 4px;
+      /* Firefox lists are usually sharper */
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .file-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-color);
+    }
+
+    .file-thumb {
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 94, 0, 0.1);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .file-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .file-details {
+      flex: 1;
+      min-width: 0;
+      /* truncate text */
+    }
+
+    .file-name {
+      font-weight: 500;
+      color: var(--text-main);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .delete-btn {
+      opacity: 0;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: var(--transition);
+    }
+
+    .file-card:hover .delete-btn {
+      opacity: 1;
+    }
+
+    .delete-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      /* red tint */
+      color: #fca5a5;
+    }
+
+    .loader {
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-left-color: var(--accent);
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      display: none;
+      margin: 0 auto;
+    }
+
+    .loader.active {
+      display: block;
+      margin-top: 10px;
+    }
+
+    /* Animations */
+    @keyframes fade-in-down {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fade-in-up {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app-container">
+    <header>
+      <div class="logo-container">
+        <img src="icon.png" alt="Logo" class="logo-img">
+      </div>
+      <h1>FireDoc</h1>
+      <p class="subtitle">Modern, Fast, Private.</p>
+    </header>
+
+    <div class="drop-area" id="dropzone">
+      <div class="drop-icon">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="48">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      </div>
+      <button class="btn-primary" id="open-btn">Open PDF</button>
+      <p class="drop-hint">or drag and drop anywhere</p>
+      <div class="loader" id="spinner"></div>
+      <input type="file" id="file-input" accept=".pdf" style="display:none">
+    </div>
+
+    <div class="recent-section">
+      <div class="section-header">
+        <h2>Recent Files</h2>
+        <button class="btn-ghost" id="clear-btn">Clear History</button>
+      </div>
+
+      <div class="grid-container" id="recent-list">
+        <!-- JS will populate this -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Compatibility Check ---
+    const isTauri = window.__TAURI__ !== undefined;
+
+    // --- Elements ---
+    const dropzone = document.getElementById('dropzone');
+    const openBtn = document.getElementById('open-btn');
+    const fileInput = document.getElementById('file-input');
+    const recentList = document.getElementById('recent-list');
+    const clearBtn = document.getElementById('clear-btn');
+    const spinner = document.getElementById('spinner');
+
+    // --- Event Listeners ---
+
+    // 1. File Selection
+    openBtn.addEventListener('click', async (e) => {
+      if (isTauri) {
+        e.preventDefault();
+        try {
+          const filePath = await window.__TAURI__.tauri.invoke('select_pdf');
+          if (filePath) handleTauriFile(filePath);
+        } catch (err) {
+          console.error("Select error:", err);
+        }
+      } else {
+        fileInput.click();
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) handleBrowserFile(e.target.files[0]);
+    });
+
+    // 2. Drag & Drop
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      document.body.addEventListener(eventName, preventDefaults, false);
+      dropzone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(name => {
+      dropzone.addEventListener(name, () => dropzone.classList.add('drag-over'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(name => {
+      dropzone.addEventListener(name, () => dropzone.classList.remove('drag-over'), false);
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0) handleFiles(files);
+    });
+
+    function handleFiles(files) {
+      const file = files[0];
+      // Simple check
+      if (!file.name.toLowerCase().endsWith('.pdf')) {
+        alert("Please select a PDF file.");
+        return;
+      }
+
+      // If we are in Tauri and dropped a file, the `file` object usually has a `path` property 
+      // if the runtime/webview exposes it. Standard HTML5 File API in webview sometimes gives path.
+      if (isTauri && file.path) {
+        handleTauriFile(file.path);
+      } else {
+        // Fallback for browser or if path missing
+        handleBrowserFile(file);
+      }
+    }
+
+
+    // --- Core Logic ---
+
+    async function handleTauriFile(filePath) {
+      spinner.classList.add('active');
+      try {
+        // 1. Get Metadata
+        const metadata = await window.__TAURI__.tauri.invoke('get_file_metadata', { path: filePath });
+
+        // 2. Prepare Stream (The Magic Fix)
+        const response = await window.__TAURI__.tauri.invoke('prepare_pdf_stream', { path: filePath });
+        const streamUrl = response.url;
+
+        const fileObj = {
+          name: metadata.name,
+          size: metadata.size,
+          path: filePath, // Store native path for history
+          streamUrl: streamUrl,
+          timestamp: Date.now()
+        };
+
+        // 3. Save & Open
+        await saveToHistory(fileObj);
+        openViewer(streamUrl);
+
+      } catch (e) {
+        console.error(e);
+        alert("Error opening file: " + e);
+        spinner.classList.remove('active');
+      }
+    }
+
+    async function handleBrowserFile(file) {
+      spinner.classList.add('active');
+      // Browser flow (e.g. dev mode without tauri)
+      const fileObj = {
+        name: file.name,
+        size: file.size,
+        path: null,
+        timestamp: Date.now()
+      };
+
+      // Generate blob URL
+      const msg = "Browser mode: Files are temporary.";
+      console.log(msg);
+
+      const blobUrl = URL.createObjectURL(file);
+      await saveToHistory(fileObj); // Won't be able to reopen really without blob...
+      openViewer(blobUrl);
+    }
+
+    function openViewer(url) {
+      // Delay slightly for animation
+      setTimeout(() => {
+        window.location.href = `pdfjs/web/viewer.html?file=${encodeURIComponent(url)}`;
+      }, 300);
+    }
+
+    // --- History Management ---
+    const HISTORY_KEY = 'firedoc_history_v2';
+
+    function getHistory() {
+      try {
+        return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      } catch { return []; }
+    }
+
+    async function saveToHistory(fileObj) {
+      let history = getHistory();
+
+      // Remove duplicate
+      history = history.filter(f => f.path !== fileObj.path || (fileObj.path === null && f.name !== fileObj.name));
+
+      // Add to top
+      history.unshift(fileObj);
+
+      // Limit
+      if (history.length > 10) history.pop();
+
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      renderHistory();
+
+      // Generate thumbnail async (fire and forget-ish)
+      // Note: Thumbnail generation requires reading the file. 
+      // In this simplified version we might skip complex thumb gen or add it back if needed.
+      // For now, let's just use the icon.
+    }
+
+    function renderHistory() {
+      const history = getHistory();
+      recentList.innerHTML = '';
+
+      if (history.length === 0) {
+        recentList.innerHTML = `<div class="empty-state">No recent files</div>`;
+        return;
+      }
+
+      history.forEach(file => {
+        const card = document.createElement('div');
+        card.className = 'file-card';
+        card.onclick = () => reopenFile(file);
+
+        // Nice size formatting
+        const sizeStr = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+        const dateStr = new Date(file.timestamp).toLocaleDateString();
+
+        card.innerHTML = `
+                <div class="file-thumb">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <div class="file-details">
+                    <div class="file-name" title="${file.name}">${file.name}</div>
+                    <div class="file-meta">${sizeStr} • ${dateStr}</div>
+                </div>
+                <button class="delete-btn" title="Remove">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            `;
+
+        // Delete handler
+        const delBtn = card.querySelector('.delete-btn');
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          removeFromHistory(file.path);
+        };
+
+        recentList.appendChild(card);
+      });
+    }
+
+    function removeFromHistory(path) {
+      let history = getHistory();
+      history = history.filter(f => f.path !== path);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      renderHistory();
+    }
+
+    async function reopenFile(file) {
+      if (isTauri && file.path) {
+        handleTauriFile(file.path);
+      } else {
+        alert("Cannot reopen file in browser mode (security restriction). Please drag it again.");
+      }
+    }
+
+    clearBtn.onclick = () => {
+      localStorage.removeItem(HISTORY_KEY);
+      renderHistory();
+    };
+
+    // Init
+    renderHistory();
+  </script>
+</body>
+
+</html>
