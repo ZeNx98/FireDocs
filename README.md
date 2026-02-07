@@ -14,14 +14,14 @@
 FireDoc is built for people who want a dedicated space for reading without the clutter of a web browser. It’s lightweight, privacy-focused, and stays out of your way.
 
 #### **Better than a Browser (PDF.js Improvements):**
-- **Lightweight** — Uses Tauri to provide a native app feel with a fraction of the memory usage of a full browser
-- **Native Experience** — No browser tabs, address bars, or distractions.
-- **Modern UI** — Optimized for focus, updated UI and styles.
-- **De-Cluttered Interface** — Removed "trash" features and unneeded buttons from the standard PDF.js for more comfortable reading experience.
-- **Smarter Zoom & Rendering** — Improved zoom logic and more stable page rendering for crisp text at any scale.
-- **Better Annotations** — A refined highlighting and drawing experience, including smarter tool selection and restricted ink selection to prevent accidental edits.
-- **Persistent Recents** — Standard PDF.js doesn't remember your files. FireDoc keeps your last 6 documents ready on the homepage.
-- **Native File Handling** — Proper "Save As" dialogs and blazing-fast file opening via Rust.
+- **Lightweight** : Uses Tauri to provide a native app feel with a fraction of the memory usage of a full browser
+- **Native Experience** : No browser tabs, address bars, or distractions.
+- **Modern UI** : Optimized for focus, updated UI and styles.
+- **De-Cluttered Interface** : Removed "trash" features and unneeded buttons from the standard PDF.js for more comfortable reading experience.
+- **Smarter Zoom & Rendering** : Improved zoom logic and more stable page rendering.
+- **Better Annotations** : A refined highlighting and drawing experience, including smarter tool selection and restricted ink selection to prevent accidental edits.
+- **Persistent Recents** : Standard PDF.js doesn't remember your files. FireDoc keeps your last 6 documents ready on the homepage.
+- **Native File Handling** : Proper "Save As" dialogs and blazing-fast file opening via Rust.
 
 ---
 
@@ -40,13 +40,13 @@ FireDoc is built for people who want a dedicated space for reading without the c
 **Debian / Ubuntu (.deb)**
 # Download the .deb file and run:
 sudo apt update
-sudo apt install ./firedoc_amd64.deb
+sudo apt install ./firedoc_3.1.0_amd64.deb 
 ```
 
 **Fedora / Red Hat (.rpm)**
 ```bash
 # Download the .rpm file and run:
-sudo dnf install ./firedoc.rpm
+sudo dnf install ./firedoc-3.1.0-1.x86_64.rpm 
 ```
 
 **Arch Linux (AUR)**
