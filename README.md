@@ -14,7 +14,7 @@
 FireDoc is built for people who want a dedicated space for reading without the clutter of a web browser. It’s lightweight, privacy-focused, and stays out of your way.
 
 #### **Better than a Browser (PDF.js Improvements):**
-- **Lightweight** : Uses Tauri to provide a native app feel with a fraction of the memory usage of a full browser
+- **Lightweight** : Uses Tauri to provide a native app feel with a fraction of the memory usage of a full browser.
 - **Native Experience** : No browser tabs, address bars, or distractions.
 - **Modern UI** : Optimized for focus, updated UI and styles.
 - **De-Cluttered Interface** : Removed trash features and unneeded buttons from the standard PDF.js for more comfortable reading experience.
@@ -29,37 +29,37 @@ FireDoc is built for people who want a dedicated space for reading without the c
 
 **AppImage (Portable)**
 > [!WARNING]
-> The current AppImage version has a bug and is not loading files. Please use the `.deb` or AUR version for now.
+> The current AppImage version has a bug and is not loading at all. Please use the `.deb` , `.rpm` or AUR version for now.
 
 ```bash
-chmod +x  firedoc_3.2.0_amd64.AppImage 
-./firedoc_3.2.0_amd64.AppImage
+chmod +x  firedoc_3.2.2_amd64.AppImage 
+./firedoc_3.2.2_amd64.AppImage
 ```
 
 **Debian / Ubuntu (.deb)**
 ```bash
 # Download the .deb file and run:
 sudo apt update
-sudo apt install ./firedoc_3.2.0_amd64.deb 
+sudo apt install ./firedoc_3.2.2_amd64.deb 
 ```
 
 **Fedora / Red Hat (.rpm)**
 ```bash
 # Download the .rpm file and run:
-sudo dnf install ./firedoc-3.2.0-1.x86_64.rpm 
+sudo dnf install ./firedoc-3.2.2-1.x86_64.rpm 
 ```
 
 **Arch Linux (AUR)**
-Install FireDoc easily using an AUR helper like `yay`:
+Install FireDoc easily from the AUR:
 ```bash
 yay -S firedoc
 ```
 
 #### **Windows**
-Download the `.msi` or `.exe` installer from the **[latest release](https://github.com/ZeNx98/FireDoc/releases)**. Run the setup and follow the prompts.
+Download the installer from the **[latest release](https://github.com/ZeNx98/FireDoc/releases)**.
 
 #### **macOS**
-Download the `.dmg` from the releases page, drag the **FireDoc** icon into your **Applications** folder, and launch it from your Launchpad.
+Download the `.dmg` from the releases page, drag the **FireDoc** icon into your **Applications** folder.
 
 ---
 
