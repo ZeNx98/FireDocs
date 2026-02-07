@@ -1,116 +1,103 @@
 <p align="center">
-  <img src="icon.png" width="256" height="256">
+  <img src="icon.png" width="256" height="256" alt="FireDoc Logo">
 </p>
 
 <h1 align="center">FireDoc</h1>
 
-**A minimalist, privacy-focused PDF viewer built with Electron and Mozilla's PDF.js**
+**A minimalist, blazing-fast PDF viewer built with Tauri and Mozilla's PDF.js**
 
 ## What is FireDoc?
 
-Firefox’s built-in PDF viewer is solid, but its browser interface can feel cluttered for reading. FireDoc fixes that by being fully standalone built with Electron and PDF.js with no Firefox, no browser UI, no cloud services, and no tracking. Just a clean, lightweight app that runs entirely on your device, giving you a fast, distraction free way to read and edit PDFs.
+FireDoc is a standalone, lightweight PDF viewer designed for speed and privacy. While browser-based viewers are convenient, they often come with clutter and overhead. FireDoc strips all that away, providing a distraction-free reading experience. Built with **Tauri**, it offers native performance with a tiny footprint, no tracking, and no cloud dependencies.
 
-##  Features
+## 🚀 Features
 
-- **Minimalist Interface** — Clean design inspired by Firefox
-- **Recent Files Panel** — Automatic thumbnails and quick reopening of recent documents
-- **Dark Theme** — Easy on the eyes with Firefox-inspired colors
-- **File Associations** — Set FireDoc as your default PDF viewer
-- **Offline First** — Works completely offline, no internet required
-- **Cross-Platform** — Built with Electron for Linux (Windows/Mac support coming soon!)
-  
----
-
-## Screenshots
-
-<p align="center">
-  <img src="img/screenshot1.png" width="400">
-  <img src="img/screenshot2.png" width="400">
-</p>
-
-<p align="center">
-  <em>Left: Start page • Right: PDF viewer interface</em>
-</p>
+- **Blazing Fast** — Built with Rust and Tauri for near-instant startup.
+- **Minimalist Interface** — Modern, clean design with an orange/fire aesthetic.
+- **Recent Files** — Quickly jump back into your last 6 documents from the homepage.
+- **Drag & Drop** — Open PDFs instantly by dropping them anywhere.
+- **Annotation Tools** — Highlight, draw, and add text comments (powered by PDF.js).
+- **Privacy First** — Runs 100% locally with no telemetry or external calls.
+- **Cross-Platform** — Native builds for Linux and Windows (macOS support in progress).
 
 ---
 
-##  Quick Install
+## 📸 Screenshots
 
-**The easiest way to install FireDoc is to download a pre-built release:**
+<p align="center">
+  <img src="img/screenshot1.png" width="400" alt="FireDoc Homepage">
+  <img src="img/screenshot2.png" width="400" alt="FireDoc Viewer">
+</p>
 
- **[Download FireDoc from Releases](https://github.com/ZeNx98/FireDoc/releases)**
+<p align="center">
+  <em>Left: Homepage with recent files • Right: Interactive PDF viewer interface</em>
+</p>
 
-Choose the installer for your operating system:
-- **Linux**: `.deb` (Debian/Ubuntu) or `.AppImage` (universal)
-- **More platforms coming soon!**
+---
 
-### Installation Steps
+## 📦 Installation
 
-#### Debian/Ubuntu (.deb)
+### Pre-built Releases
+Download the latest binaries for your platform:
+**[Download FireDoc from Releases](https://github.com/ZeNx98/FireDoc/releases)**
+
+- **Linux**: `.deb`, `.AppImage`, and Arch Linux packages.
+- **Windows**: `.msi` and setup executables.
+
+### Arch Linux (AUR)
+If you are on Arch Linux, you can build the package using the provided `PKGBUILD`:
 ```sh
-# Download the .deb file from releases, then:
-sudo dpkg -i FireDoc-2.0.0-amd64.deb
+cd pkg
+makepkg -si
 ```
 
-#### Universal Linux (AppImage)
+### From Source
+Requires **Rust** and **Node.js**:
 ```sh
-# Download the .AppImage, make it executable, and run:
-chmod +x FireDoc-2.0.0-x86_64.AppImage
-./FireDoc-2.0.0-x86_64.AppImage
+# Clone the repository
+git clone https://github.com/ZeNx98/FireDoc.git
+cd FireDoc
+
+# Install dependencies
+npm install
+
+# Run in development mode
+npm run tauri dev
+
+# Build production bundle
+npm run tauri build
 ```
 
+---
 
 ## 📖 How to Use
 
-1. **Launch FireDoc** from your applications menu or by double-clicking the desktop icon.
-2. **Open a PDF** by:
-   - Clicking "Choose PDF File" button
-   - Dragging and dropping a PDF onto the window
-   - Pressing `O` on your keyboard
-   - Clicking a recent file from your history
-3. **View your PDF** with all the features of Mozilla's PDF.js viewer:
-   - Zoom in/out
-   - Navigate pages
-   - Search text
-   - Print documents
-   - Toggle sidebar for thumbnails and outline
-
-### Keyboard Shortcuts
-
-| Shortcut | Action |
-|----------|--------|
-| `O` | Open file dialog |
-| `?` or `/` | Show keyboard shortcuts |
-| Drag & Drop | Drop PDF files anywhere |
-
+1. **Open a PDF**:
+   - Use the **Browse Files** button on the homepage.
+   - **Drag and drop** a PDF file onto the app window.
+   - Select a file from the **Continue Reading** list.
+2. **Reading & Editing**:
+   - **Scroll/Zoom**: Use standard mouse gestures or toolbar controls.
+   - **Annotations**: Use the Pencil, Highlight, or Text tools in the toolbar.
+   - **Sidebars**: Toggle thumbnails or document outlines for easy navigation.
+3. **Save**: Click the download/save icon to export your annotated PDF.
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
-**Contributions are welcome!** We'd especially love help with:
+Contributions are welcome! Whether it's fixing a bug, adding a feature, or improving documentation, feel free to open a PR.
 
-- **Supporting more platforms** — Windows and macOS builds
-- **Translations** — Multi-language support
-- **UI/UX improvements** — Design enhancements and accessibility
-- **Bug fixes** — Testing and reporting issues
-- **Documentation** — Better guides and tutorials
-- 
----
-
-## License
-
-This project is licensed under MIT License in the [LICENSE](./LICENSE) file.
-
-FireDoc uses **Mozilla PDF.js** which is licensed under Apache 2.0. See `pdfjs/LICENSE` for details.
+- **Translations**: Help us reach more languages!
+- **UI/UX**: Help refine the "Fire" aesthetic.
+- **Testing**: Report issues or request features via GitHub Issues.
 
 ---
 
-## Acknowledgements
+## 📜 License
 
-- Built with **[Mozilla PDF.js](https://github.com/mozilla/pdf.js)** — Industry-leading PDF rendering
-- Built with **[Electron](https://www.electronjs.org/)** — Cross-platform desktop framework
-- Inspired by Firefox's clean, minimalist design philosophy
+This project is licensed under the **MIT License**. See [LICENSE](./LICENSE) for details.
+FireDoc uses **Mozilla PDF.js** (Apache 2.0).
 
 ---
 

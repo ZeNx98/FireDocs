@@ -11,9 +11,9 @@
   --surface-hover: #262626;
 
   /* Orange/Fire Theme */
-  --primary-gradient: linear-gradient(135deg, #FF9966 0%, #FF5E62 100%);
-  --primary-color: #FF5E62;
-  --primary-glow: rgba(255, 94, 98, 0.4);
+  --primary-gradient: linear-gradient(135deg, #FCCA80 0%, #FF893E 33%, #FC6660 66%, #ED452F 100%);
+  --primary-color: #ED452F;
+  --primary-glow: rgba(237, 69, 47, 0.4);
 
   --text-primary: #FFFFFF;
   --text-secondary: #AAAAAA;
@@ -35,6 +35,14 @@
 
   --scrollbar-bg-color: transparent !important;
   --scrollbar-color: #333333 !important;
+
+  /* Further PDF.js Theme Overrides */
+  --button-primary-bg-color: var(--primary-color) !important;
+  --button-primary-hover-bg-color: #ED452F !important;
+  --link-fg-color: var(--primary-color) !important;
+  --radio-checked-border-color: var(--primary-color) !important;
+  --highlight-bg-color: rgba(252, 202, 128, 0.4) !important;
+  /* Using #FCCA80 for highlights */
 
   /* --- Sidebar Icons (Lucide Style) --- */
   /* Thumbnail: Layout Grid */
@@ -208,7 +216,7 @@ textarea {
 /* Toggled / Active State */
 .toolbarButton.toggled,
 .splitToolbarButton.toggled>.toolbarButton.toggled {
-  background: rgba(255, 94, 98, 0.15) !important;
+  background: rgba(237, 69, 47, 0.15) !important;
   color: var(--primary-color) !important;
   box-shadow: 0 0 10px var(--primary-glow);
 }
@@ -251,8 +259,8 @@ textarea {
   /* Subtle radial gradient background like homepage */
   background-color: var(--bg-color) !important;
   background-image:
-    radial-gradient(circle at 10% 20%, rgba(255, 94, 98, 0.03) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(255, 153, 102, 0.03) 0%, transparent 40%) !important;
+    radial-gradient(circle at 10% 20%, rgba(237, 69, 47, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(252, 202, 128, 0.03) 0%, transparent 40%) !important;
 }
 
 .page {
@@ -473,7 +481,7 @@ textarea {
 }
 
 .doorHangerRight .menuContainer .toolbarButton.toggled {
-  background-color: rgba(255, 107, 0, 0.2) !important;
+  background-color: rgba(237, 69, 47, 0.2) !important;
   color: var(--primary-color) !important;
 }
 

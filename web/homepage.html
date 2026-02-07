@@ -18,9 +18,9 @@
             --surface-hover: #262626;
 
             /* Orange/Fire Theme */
-            --primary-gradient: linear-gradient(135deg, #FF9966 0%, #FF5E62 100%);
-            --primary-color: #FF5E62;
-            --primary-glow: rgba(255, 94, 98, 0.4);
+            --primary-gradient: linear-gradient(135deg, #FCCA80 0%, #FF893E 33%, #FC6660 66%, #ED452F 100%);
+            --primary-color: #FF893E;
+            --primary-glow: rgba(255, 137, 62, 0.4);
 
             --text-primary: #FFFFFF;
             --text-secondary: #AAAAAA;
@@ -41,8 +41,8 @@
             flex-direction: column;
             overflow: hidden;
             background-image:
-                radial-gradient(circle at 10% 20%, rgba(255, 94, 98, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(255, 153, 102, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 10% 20%, rgba(255, 137, 62, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(252, 202, 128, 0.05) 0%, transparent 40%);
         }
 
         /* Header */
@@ -97,7 +97,7 @@
             width: 80px;
             height: 80px;
             /* Removed filter drop-shadow animation/transform */
-            filter: drop-shadow(0 0 25px rgba(255, 94, 98, 0.4));
+            filter: drop-shadow(0 0 25px rgba(255, 137, 62, 0.4));
         }
 
         /* Removed brand hover transform */
@@ -153,7 +153,7 @@
             border-color: var(--primary-color);
             background: rgba(30, 30, 30, 0.8);
             /* Removed transform scale */
-            box-shadow: 0 0 40px rgba(255, 94, 98, 0.2);
+            box-shadow: 0 0 40px rgba(255, 137, 62, 0.2);
         }
 
         .drop-content {
@@ -195,7 +195,7 @@
             font-size: 1rem;
             cursor: pointer;
             transition: var(--transition);
-            box-shadow: 0 8px 20px rgba(255, 94, 98, 0.3);
+            box-shadow: 0 8px 20px rgba(255, 137, 62, 0.3);
             pointer-events: auto;
             position: relative;
             overflow: hidden;
@@ -204,7 +204,7 @@
         .btn-browse:hover {
             opacity: 0.9;
             /* Removed transform */
-            box-shadow: 0 12px 25px rgba(255, 94, 98, 0.4);
+            box-shadow: 0 12px 25px rgba(255, 137, 62, 0.4);
         }
 
         /* Recents */
@@ -348,7 +348,7 @@
         /* On mobile/touch devices, might want to show it always, but for desktop hover is fine */
 
         .btn-delete-recent:hover {
-            background: #FF4757;
+            background: #ED452F;
             color: white;
         }
 
@@ -381,7 +381,7 @@
         }
 
         .heart {
-            color: #FF4757;
+            color: #ED452F;
             display: inline-block;
         }
 
@@ -477,8 +477,10 @@
                         stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <defs>
                             <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#FF9966" />
-                                <stop offset="100%" style="stop-color:#FF5E62" />
+                                <stop offset="0%" style="stop-color:#FCCA80" />
+                                <stop offset="33%" style="stop-color:#FF893E" />
+                                <stop offset="66%" style="stop-color:#FC6660" />
+                                <stop offset="100%" style="stop-color:#ED452F" />
                             </linearGradient>
                         </defs>
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
