@@ -1,90 +1,62 @@
 {
+    "$schema": "https://schema.tauri.app/config/2",
+    "productName": "firedoc",
+    "version": "3.2.0",
+    "identifier": "com.znx.firedoc",
     "build": {
         "beforeDevCommand": "",
         "beforeBuildCommand": "",
-        "devPath": "../web",
-        "distDir": "../web",
-        "withGlobalTauri": true
+        "frontendDist": "../web"
     },
-    "package": {
-        "productName": "firedoc",
-        "version": "3.2.0"
-    },
-    "tauri": {
-        "allowlist": {
-            "all": true,
-            "fs": {
-                "all": true,
+    "app": {
+        "withGlobalTauri": true,
+        "windows": [
+            {
+                "label": "main",
+                "title": "FireDoc",
+                "width": 1200,
+                "height": 800,
+                "resizable": true,
+                "fullscreen": false,
+                "url": "homepage.html"
+            }
+        ],
+        "security": {
+            "assetProtocol": {
+                "enable": true,
                 "scope": [
-                    "$HOME/**",
-                    "$APPDATA/**"
+                    "**"
                 ]
             },
-            "protocol": {
-                "all": true,
-                "asset": true,
-                "assetScope": [
-                    "$HOME/**",
-                    "/"
-                ]
-            }
-        },
-        "bundle": {
-            "active": true,
-            "category": "Utility",
-            "copyright": "",
+            "csp": "default-src 'self' 'unsafe-inline' 'unsafe-eval' tauri: asset: https: data: blob: pdfstream: ipc:;"
+        }
+    },
+    "bundle": {
+        "active": true,
+        "targets": "all",
+        "icon": [
+            "icons/32x32.png",
+            "icons/128x128.png",
+            "icons/128x128@2x.png",
+            "icons/icon.png",
+            "icons/icon.ico",
+            "icons/icon.icns"
+        ],
+        "category": "Utility",
+        "copyright": "",
+        "shortDescription": "",
+        "longDescription": "",
+        "linux": {
             "deb": {
                 "depends": []
             },
             "rpm": {
                 "depends": [
-                    "webkit2gtk4.0",
+                    "webkit2gtk4.1",
                     "gtk3",
-                    "libappindicator-gtk3"
+                    "libayatana-appindicator"
                 ]
-            },
-            "externalBin": [],
-            "icon": [
-                "icons/32x32.png",
-                "icons/128x128.png",
-                "icons/128x128@2x.png",
-                "icons/icon.png",
-                "icons/icon.ico",
-                "icons/icon.icns"
-            ],
-            "identifier": "com.znx.firedoc",
-            "longDescription": "",
-            "macOS": {
-                "entitlements": null,
-                "exceptionDomain": "",
-                "frameworks": [],
-                "providerShortName": null,
-                "signingIdentity": null
-            },
-            "resources": [],
-            "shortDescription": "",
-            "targets": "all",
-            "windows": {
-                "certificateThumbprint": null,
-                "digestAlgorithm": "sha256",
-                "timestampUrl": ""
             }
-        },
-        "security": {
-            "csp": "default-src 'self' 'unsafe-inline' 'unsafe-eval' tauri: asset: https: data: blob: pdfstream:;"
-        },
-        "updater": {
-            "active": false
-        },
-        "windows": [
-            {
-                "fullscreen": false,
-                "height": 800,
-                "resizable": true,
-                "title": "FireDoc",
-                "width": 1200,
-                "url": "homepage.html"
-            }
-        ]
+        }
     }
 }

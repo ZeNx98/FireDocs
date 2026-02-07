@@ -11,8 +11,9 @@ class TauriRangeTransport extends PDFDataRangeTransport {
   }
 
   requestDataRange(begin, end) {
+    console.log(`Requesting data range: ${begin} - ${end}`);
     const length = end - begin;
-    window.__TAURI__.invoke('read_file_chunk', {
+    (window.__TAURI__.core?.invoke || window.__TAURI__.invoke)('read_file_chunk', {
       path: this.path,
       offset: begin,
       length: length
@@ -37,6 +38,7 @@ class TauriRangeTransport extends PDFDataRangeTransport {
 
   const initEnhancements = function () {
     console.log('FireDoc Enhancements initializing...');
+    // alert('Debug: pdfPath=' + pdfPath + ' __TAURI__=' + !!window.__TAURI__);
 
     // Add Home button functionality
     const homeButton = document.getElementById('homeButton');
@@ -61,12 +63,18 @@ class TauriRangeTransport extends PDFDataRangeTransport {
     if (pdfPath && window.__TAURI__) {
       console.log('Detected pdfPath, attempting custom chunked load:', pdfPath);
 
-      const invoke = window.__TAURI__.invoke;
+      const invoke = window.__TAURI__.core?.invoke || window.__TAURI__.invoke;
+      console.log('Detected pdfPath, attempting custom chunked load:', pdfPath);
+      if (!invoke) alert('Error: Tauri invoke not found!');
       const INITIAL_CHUNK_SIZE = 65536; // 64KB start
 
       invoke('get_file_metadata', { path: pdfPath })
         .then(metadata => {
           console.log('Metadata received:', metadata);
+          if (!metadata) {
+            alert('Error: No metadata received for ' + pdfPath);
+            return;
+          }
           const totalSize = metadata.size;
 
           // 2. Initialize Transport with empty data to force standard loading
@@ -367,22 +375,17 @@ class TauriRangeTransport extends PDFDataRangeTransport {
           const doc = window.PDFViewerApplication.pdfDocument;
           const data = await doc.saveDocument(); // Returns Uint8Array
 
-          // 2. Open Save Dialog
-          if (window.__TAURI__ && window.__TAURI__.dialog) {
+          // 2. Open Save Dialog and Write File via custom command
+          if (window.__TAURI__) {
             const suggestedName = document.title.endsWith('.pdf') ? document.title : document.title + '.pdf';
-
-            const savePath = await window.__TAURI__.dialog.save({
-              defaultPath: suggestedName,
-              filters: [{ name: 'PDF Document', extensions: ['pdf'] }]
+            const savePath = await (window.__TAURI__.core?.invoke || window.__TAURI__.invoke)('save_pdf', {
+              filename: suggestedName,
+              data: Array.from(data)
             });
 
             if (savePath) {
-              // 3. Write File
-              await window.__TAURI__.fs.writeBinaryFile(savePath, data);
               showNotification('File saved successfully!');
               console.log('File saved to:', savePath);
-            } else {
-              showNotification('Save cancelled.');
             }
           } else {
             console.warn('Tauri API not found, falling back to default download.');

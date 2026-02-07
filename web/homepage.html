@@ -436,12 +436,84 @@
         .btn-close:hover {
             background: #333;
         }
+
+        /* Settings CSS */
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 1.5rem 0;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        .settings-label {
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--surface-hover);
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--text-primary);
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-image: var(--primary-gradient);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
     </style>
 </head>
 
 <body>
-    <header>
+    <header data-tauri-drag-region>
         <div class="header-controls">
+            <button class="icon-btn" id="settingsBtn" title="Settings">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                    </path>
+                </svg>
+            </button>
             <button class="icon-btn" id="infoBtn" title="About">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -508,9 +580,24 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <h2>Settings</h2>
+            <div class="settings-row">
+                <span class="settings-label">Hide System Title Bar</span>
+                <label class="switch">
+                    <input type="checkbox" id="hideDecorationsToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <button class="btn-close" id="closeSettingsModal">Close</button>
+        </div>
+    </div>
+
     <script>
         // Tauri Integration
-        const invoke = window.__TAURI__?.invoke || ((cmd, args) => { console.log('Mock/Browser invoke:', cmd, args); return Promise.resolve(null); });
+        const invoke = window.__TAURI__?.core?.invoke || window.__TAURI__?.invoke || ((cmd, args) => { console.log('Mock/Browser invoke:', cmd, args); return Promise.resolve(null); });
         const listen = window.__TAURI__?.event?.listen || (() => { });
         const shell = window.__TAURI__?.shell; // Access shell API
 
@@ -519,16 +606,41 @@
         const recentsList = document.getElementById('recentsList');
         const clearRecentsBtn = document.getElementById('clearRecentsBtn');
         const infoBtn = document.getElementById('infoBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
         const aboutModal = document.getElementById('aboutModal');
+        const settingsModal = document.getElementById('settingsModal');
         const closeModal = document.getElementById('closeModal');
+        const closeSettingsModal = document.getElementById('closeSettingsModal');
         const creditsLink = document.getElementById('creditsLink');
+        const hideDecorationsToggle = document.getElementById('hideDecorationsToggle');
 
         let recents = [];
 
         async function init() {
             loadRecents();
             renderRecents();
+            loadSettings();
             setupListeners();
+        }
+
+        function loadSettings() {
+            const hideDecorations = localStorage.getItem('fireDoc_hideDecorations') === 'true';
+            hideDecorationsToggle.checked = hideDecorations;
+            if (hideDecorations) applyDecorations(false);
+        }
+
+        function saveSettings() {
+            localStorage.setItem('fireDoc_hideDecorations', hideDecorationsToggle.checked);
+        }
+
+        async function applyDecorations(show) {
+            if (window.__TAURI__) {
+                const { getCurrentWindow } = window.__TAURI__.window;
+                const win = getCurrentWindow();
+                await win.setDecorations(show);
+                // Also optionally handle shadow if needed for some platforms
+                if (win.setShadow) await win.setShadow(show);
+            }
         }
 
         async function openPdf(path) {
@@ -540,18 +652,8 @@
 
                 addToRecents(path);
 
-                // Use Tauri's built-in convertFileSrc to handle file paths securely
-                const { convertFileSrc } = window.__TAURI__.tauri;
-                const url = convertFileSrc(path);
-
-                if (path) {
-                    // Pass using custom parameter 'pdfPath' to handle loading manually via FS API
-                    // Pass file= (empty) to stop PDF.js from loading the default compressed.tracemonkey-pldi-09.pdf
-                    const viewerUrl = `pdfjs/web/viewer.html?file=&pdfPath=${encodeURIComponent(path)}`;
-                    window.location.href = viewerUrl;
-                } else {
-                    throw new Error('Failed to convert file path to URL');
-                }
+                const viewerUrl = `pdfjs/web/viewer.html?file=&pdfPath=${encodeURIComponent(path)}`;
+                window.location.href = viewerUrl;
             } catch (err) {
                 console.error('Failed to open PDF:', err);
                 alert('Failed to open PDF: ' + err);
@@ -692,11 +794,22 @@
                 }
             });
 
-            // Modal
+            // Modals
             infoBtn.addEventListener('click', () => aboutModal.classList.add('active'));
             closeModal.addEventListener('click', () => aboutModal.classList.remove('active'));
             aboutModal.addEventListener('click', (e) => {
                 if (e.target === aboutModal) aboutModal.classList.remove('active');
+            });
+
+            settingsBtn.addEventListener('click', () => settingsModal.classList.add('active'));
+            closeSettingsModal.addEventListener('click', () => settingsModal.classList.remove('active'));
+            settingsModal.addEventListener('click', (e) => {
+                if (e.target === settingsModal) settingsModal.classList.remove('active');
+            });
+
+            hideDecorationsToggle.addEventListener('change', () => {
+                saveSettings();
+                applyDecorations(!hideDecorationsToggle.checked);
             });
 
             dropZone.addEventListener('dragover', (e) => {

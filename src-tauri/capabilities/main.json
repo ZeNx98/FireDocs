@@ -1,0 +1,19 @@
+{
+    "identifier": "main-capability",
+    "description": "Capability for the main window",
+    "windows": [
+        "main"
+    ],
+    "permissions": [
+        "core:default",
+        "shell:allow-open",
+        "dialog:allow-open",
+        "dialog:allow-save",
+        "fs:allow-home-read-recursive",
+        "fs:allow-home-write-recursive",
+        "fs:allow-document-read-recursive",
+        "fs:allow-document-write-recursive",
+        "core:window:allow-set-decorations",
+        "core:window:allow-set-shadow"
+    ]
+}

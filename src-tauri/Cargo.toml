@@ -6,16 +6,18 @@ authors = ["ZeNx98"]
 edition = "2021"
 
 [build-dependencies]
-tauri-build = { version = "1.5", features = [] }
+tauri-build = { version = "2.0", features = [] }
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.5", features = ["api-all"] }
+tauri = { version = "2.0", features = ["protocol-asset"] }
+tauri-plugin-fs = "2.0"
+tauri-plugin-dialog = "2.0"
+tauri-plugin-shell = "2.0"
 tokio = { version = "1", features = ["full"] }
 url = "2.5"
 percent-encoding = "2.3"
-warp = "0.3"
 uuid = { version = "1.0", features = ["v4"] }
 once_cell = "1.18"
 futures = "0.3"
