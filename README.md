@@ -31,11 +31,13 @@ FireDoc is built for people who want a dedicated space for reading without the c
 > [!WARNING]
 > The current AppImage version has a bug and is not loading files. Please use the `.deb` or AUR version for now.
 
-   chmod +x  firedoc_3.1.0_amd64.AppImage 
-   ./firedoc_3.1.0_amd64.AppImage
-   ```
+```bash
+chmod +x  firedoc_3.1.0_amd64.AppImage 
+./firedoc_3.1.0_amd64.AppImage
+```
 
 **Debian / Ubuntu (.deb)**
+```bash
 # Download the .deb file and run:
 sudo apt update
 sudo apt install ./firedoc_3.1.0_amd64.deb 
