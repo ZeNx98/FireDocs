@@ -623,3 +623,19 @@ textarea {
   position: absolute !important;
   pointer-events: none !important;
 }
+
+/* --- Restrict Ink Selection --- */
+/* User Request: Ink/Pencil layers should only be selectable when using the Pointer tool */
+/* The .disable-ink-selection class is added by custom-viewer-enhancements.js when an editor tool is active */
+/* IMPORTANT: We must ALLOW pointer-events on the ACTIVE editor (.editing) so drawing still works! */
+.disable-ink-selection .inkEditor:not(.editing) {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+/* Optional: also prevent focus/outline when disabled */
+.disable-ink-selection .inkEditor:not(.editing):focus,
+.disable-ink-selection .inkEditor:not(.editing).selectedEditor {
+  outline: none !important;
+  box-shadow: none !important;
+}

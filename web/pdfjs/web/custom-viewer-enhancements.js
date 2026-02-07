@@ -678,6 +678,58 @@ class TauriRangeTransport extends PDFDataRangeTransport {
 
     setupCustomZoom();
 
+    // --- Restrict Ink Selection (User Request) ---
+    // Only allow selecting Ink/Pencil annotations when using the Pointer tool (AnnotationEditorType.NONE and CursorTool.SELECT)
+    const setupInkRestriction = () => {
+      const viewerContainer = document.getElementById('viewerContainer');
+      if (!viewerContainer) return;
+
+      let currentMode = 0; // NONE
+      let currentTool = 0; // SELECT
+
+      const updateInk = () => {
+        // We only enable selection if mode is 0 (Pointer/Select) AND tool is 0 (Select tool)
+        // If mode !== 0, we are in an editor tool (Ink, Text, etc.)
+        // If tool !== 0, we are in Hand or Zoom tool.
+        if (currentMode !== 0 || currentTool !== 0) {
+          viewerContainer.classList.add('disable-ink-selection');
+        } else {
+          viewerContainer.classList.remove('disable-ink-selection');
+        }
+      };
+
+      // Listen for changes
+      const checkAppAndListen = setInterval(() => {
+        if (window.PDFViewerApplication && window.PDFViewerApplication.eventBus) {
+          clearInterval(checkAppAndListen);
+
+          window.PDFViewerApplication.eventBus.on('annotationeditormodechanged', (e) => {
+            currentMode = e.mode;
+            updateInk();
+          });
+
+          window.PDFViewerApplication.eventBus.on('cursortoolchanged', (e) => {
+            currentTool = e.tool;
+            updateInk();
+          });
+
+          // Initialize
+          // We can try to get actual values
+          if (window.PDFViewerApplication.pdfViewer) {
+            currentMode = window.PDFViewerApplication.pdfViewer.annotationEditorMode;
+          }
+          if (window.PDFViewerApplication.pdfCursorTools) {
+            currentTool = window.PDFViewerApplication.pdfCursorTools.tool;
+          }
+          updateInk();
+
+          console.log('🚫 Ink selection restriction initialized');
+        }
+      }, 100);
+    };
+
+    setupInkRestriction();
+
     // Initialize custom zoom
     addCustomWheelZoom();
 
