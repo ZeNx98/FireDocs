@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=FireDoc
+Comment=Minimalist PDF Viewer
+Exec=firedoc %u
+Icon=firedoc
+Terminal=false
+Type=Application
+Categories=Office;Viewer;
+MimeType=application/pdf;

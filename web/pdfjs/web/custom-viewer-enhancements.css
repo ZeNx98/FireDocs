@@ -610,3 +610,16 @@ textarea {
 .dropdownToolbarButton::after {
   display: none !important;
 }
+
+/* Force hide the native scale select element and other unwanted buttons */
+#scaleSelect,
+#printButton,
+#downloadButton {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  pointer-events: none !important;
+}

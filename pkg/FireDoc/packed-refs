@@ -1,0 +1,8 @@
+# pack-refs with: peeled fully-peeled sorted 
+4b11589b1d3652e1e939f82f019758a4727ce52e refs/heads/Require-Firefox
+8e6baa0487ae1584e2fd2c1a6be32ae5827e44f0 refs/heads/main
+8e8f2806dfc59b5a8559d2031a30fce836d665b2 refs/tags/beta
+3d4fd3960c9f589e718eb8fbe96536d8a20dc04e refs/tags/v3.0.0
+4ee28ff59abeb69445da362212d34e1e4604463a refs/tags/v3.0.1
+91502fd5b0f980bd06d0fc3ae71ed58e302afaa0 refs/tags/v3.0.2
+647b929301243083795adb47c272b631d226836b refs/tags/v3.1.1

@@ -25,8 +25,18 @@ yarn-error.log
 src-tauri/target/
 target/
 **/*.rs.bk
-Cargo.lock
+# Cargo.lock (Tracked for App Consistency)
+# Cargo.lock
+
 
 # Tauri Releated
 src-tauri/gen/android/
 src-tauri/gen/schemas/
+
+# Makepkg / Arch Build Artifacts
+/src/
+/FireDoc/
+/pkg/src/
+/pkg/pkg/
+*.pkg.tar.zst
+*.log

@@ -166,6 +166,7 @@
             font-size: 3.5rem;
             margin-bottom: 1.5rem;
             background: var(--primary-gradient);
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
@@ -618,25 +619,57 @@
             }
             clearRecentsBtn.style.display = 'block';
 
-            recentsList.innerHTML = recents.map((file, index) => `
-                <div class="recent-card" onclick="openPdf('${file.path.replace(/\\/g, '\\\\')}')">
-                    <div class="recent-icon">
-                        <svg viewBox="0 0 24 24" width="24" height="24">
-                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/>
-                        </svg>
-                    </div>
-                    <div class="recent-info">
-                        <div class="recent-name">${file.name}</div>
-                        <div class="recent-path">${file.path}</div>
-                    </div>
-                    <button class="btn-delete-recent" title="Remove" onclick="removeRecent(${index}, event)">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
-                </div>
-            `).join('');
+            recentsList.innerHTML = '';
+            recents.forEach((file, index) => {
+                const card = document.createElement('div');
+                card.className = 'recent-card';
+
+                // Click to open
+                card.addEventListener('click', () => openPdf(file.path));
+
+                // Icon
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'recent-icon';
+                iconDiv.innerHTML = `
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/>
+                    </svg>`;
+                card.appendChild(iconDiv);
+
+                // Info
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'recent-info';
+
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'recent-name';
+                nameDiv.textContent = file.name;
+                infoDiv.appendChild(nameDiv);
+
+                const pathDiv = document.createElement('div');
+                pathDiv.className = 'recent-path';
+                pathDiv.textContent = file.path;
+                infoDiv.appendChild(pathDiv);
+
+                card.appendChild(infoDiv);
+
+                // Delete Button
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn-delete-recent';
+                deleteBtn.title = 'Remove';
+                deleteBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>`;
+
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeRecent(index, e);
+                });
+
+                card.appendChild(deleteBtn);
+                recentsList.appendChild(card);
+            });
         }
 
         async function handleOpenClick() {
