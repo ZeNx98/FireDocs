@@ -83,38 +83,6 @@
             color: var(--text-primary);
         }
 
-        /* Window Controls */
-        .window-controls {
-            position: fixed;
-            top: 0;
-            right: 0;
-            display: none;
-            /* Only show when decorations hidden */
-            z-index: 1000;
-            padding: 4px;
-        }
-
-        .window-control {
-            width: 44px;
-            height: 32px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background 0.2s;
-            color: var(--text-secondary);
-        }
-
-        .window-control:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-        }
-
-        .window-control.close:hover {
-            background: #e81123;
-            color: white;
-        }
-
         .brand {
             display: flex;
             flex-direction: column;
@@ -536,24 +504,6 @@
 
 <body>
     <header data-tauri-drag-region>
-        <div class="window-controls" id="windowControls">
-            <div class="window-control" id="winMinBtn">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-            </div>
-            <div class="window-control" id="winMaxBtn">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="4" y="4" width="16" height="16" rx="1"></rect>
-                </svg>
-            </div>
-            <div class="window-control close" id="winCloseBtn">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </div>
-        </div>
         <div class="header-controls">
             <button class="icon-btn" id="settingsBtn" title="Settings">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -624,7 +574,7 @@
     <div class="modal-overlay" id="aboutModal">
         <div class="modal">
             <h2>FireDoc</h2>
-            <p>Version 3.2.1</p>
+            <p>Version 3.2.2</p>
             <p>A minimalist, blazing fast PDF viewer built with Tauri.</p>
             <button class="btn-close" id="closeModal">Close</button>
         </div>
@@ -663,10 +613,6 @@
         const closeSettingsModal = document.getElementById('closeSettingsModal');
         const creditsLink = document.getElementById('creditsLink');
         const hideDecorationsToggle = document.getElementById('hideDecorationsToggle');
-        const windowControls = document.getElementById('windowControls');
-        const winMinBtn = document.getElementById('winMinBtn');
-        const winMaxBtn = document.getElementById('winMaxBtn');
-        const winCloseBtn = document.getElementById('winCloseBtn');
 
         let recents = [];
 
@@ -682,7 +628,6 @@
             hideDecorationsToggle.checked = hideDecorations;
             if (hideDecorations) {
                 applyDecorations(false);
-                windowControls.style.display = 'flex';
             }
         }
 
@@ -868,12 +813,7 @@
                 saveSettings();
                 const hide = hideDecorationsToggle.checked;
                 applyDecorations(!hide);
-                windowControls.style.display = hide ? 'flex' : 'none';
             });
-
-            winMinBtn.addEventListener('click', () => window.__TAURI__.window.getCurrentWindow().minimize());
-            winMaxBtn.addEventListener('click', () => window.__TAURI__.window.getCurrentWindow().toggleMaximize());
-            winCloseBtn.addEventListener('click', () => window.__TAURI__.window.getCurrentWindow().close());
 
             dropZone.addEventListener('dragover', (e) => {
                 e.preventDefault();

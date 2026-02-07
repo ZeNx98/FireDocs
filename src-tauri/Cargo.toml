@@ -1,6 +1,6 @@
 [package]
 name = "firedoc"
-version = "3.2.1"
+version = "3.2.2"
 description = "FireDoc: Minimalist PDF Viewer"
 authors = ["ZeNx98"]
 edition = "2021"

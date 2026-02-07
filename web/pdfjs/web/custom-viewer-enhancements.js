@@ -39,14 +39,6 @@ class TauriRangeTransport extends PDFDataRangeTransport {
     console.log('FireDoc Enhancements initializing...');
 
     const hideDecorations = localStorage.getItem('fireDoc_hideDecorations') === 'true';
-    if (hideDecorations && window.__TAURI__) {
-      const wc = document.getElementById('windowControls');
-      if (wc) wc.style.display = 'flex';
-
-      document.getElementById('winMinBtn')?.addEventListener('click', () => window.__TAURI__.window.getCurrentWindow().minimize());
-      document.getElementById('winMaxBtn')?.addEventListener('click', () => window.__TAURI__.window.getCurrentWindow().toggleMaximize());
-      document.getElementById('winCloseBtn')?.addEventListener('click', () => window.__TAURI__.window.getCurrentWindow().close());
-    }
     // alert('Debug: pdfPath=' + pdfPath + ' __TAURI__=' + !!window.__TAURI__);
 
     // Add Home button functionality
