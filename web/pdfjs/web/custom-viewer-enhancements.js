@@ -1,75 +1,269 @@
 import { PDFDataRangeTransport } from '../build/pdf.mjs';
 
-// FireDoc Custom PDF.js Viewer Enhancements
+// FireDocs Custom PDF.js Viewer Enhancements
 // Additional functionality and UX improvements
 
-class TauriRangeTransport extends PDFDataRangeTransport {
+class ElectronRangeTransport extends PDFDataRangeTransport {
   constructor(path, length, initialData) {
     super(length, initialData);
     this.path = path;
-    console.log(`TauriRangeTransport initialized for ${path} (${length} bytes)`);
+    console.log(`ElectronRangeTransport initialized for ${path} (${length} bytes)`);
   }
 
   requestDataRange(begin, end) {
     console.log(`Requesting data range: ${begin} - ${end}`);
     const length = end - begin;
-    (window.__TAURI__.core?.invoke || window.__TAURI__.invoke)('read_file_chunk', {
-      path: this.path,
-      offset: begin,
-      length: length
-    })
-      .then(base64Data => {
-        const binaryString = atob(base64Data);
-        const len = binaryString.length;
-        const bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
-        this.onDataRange(begin, bytes);
+    if (window.electron?.invoke) {
+      window.electron.invoke('read_file_chunk', {
+        path: this.path,
+        offset: begin,
+        length: length
       })
-      .catch(err => {
-        console.error('Chunk read error:', err);
-      });
+        .then(base64Data => {
+          const binaryString = atob(base64Data);
+          const len = binaryString.length;
+          const bytes = new Uint8Array(len);
+          for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          this.onDataRange(begin, bytes);
+        })
+        .catch(err => {
+          console.error('Chunk read error:', err);
+        });
+    }
   }
 }
 (function () {
   'use strict';
 
   const initEnhancements = function () {
-    console.log('FireDoc Enhancements initializing...');
+    console.log('FireDocs Enhancements initializing...');
 
-    const hideDecorations = localStorage.getItem('fireDoc_hideDecorations') === 'true';
-    // alert('Debug: pdfPath=' + pdfPath + ' __TAURI__=' + !!window.__TAURI__);
+    const hideDecorations = localStorage.getItem('fireDocs_hideDecorations') === 'true';
+
+    // Notification system
+    function showNotification(message, duration = 3000) {
+      const notification = document.createElement('div');
+      notification.textContent = message;
+      notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(88, 101, 242, 0.4);
+        z-index: 10000;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        animation: slideInRight 0.3s ease, fadeOut 0.3s ease ${duration - 300}ms forwards;
+      `;
+
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideInRight {
+          from {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        @keyframes fadeOut {
+          to {
+            opacity: 0;
+            transform: translateX(400px);
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.remove();
+        style.remove();
+      }, duration);
+    }
+
+    const performSave = async () => {
+      console.log('FireDocs: performSave called');
+      try {
+        if (!window.PDFViewerApplication || !window.PDFViewerApplication.pdfDocument) {
+          console.warn('FireDocs: PDFViewerApplication or pdfDocument not ready');
+          showNotification('Document not ready.');
+          return false;
+        }
+
+        showNotification('Preparing to save...');
+        console.log('FireDocs: Capturing document data...');
+
+        // 1. Get PDF data (with annotations)
+        const doc = window.PDFViewerApplication.pdfDocument;
+        const data = await doc.saveDocument(); // Returns Uint8Array
+        console.log('FireDocs: Data captured, size:', data.length);
+
+        // 2. Resolve IPC invoke
+        if (window.electron?.invoke) {
+          const suggestedName = document.title.endsWith('.pdf') ? document.title : document.title + '.pdf';
+          console.log('FireDocs: Invoking save_pdf with filename:', suggestedName);
+
+          const savePath = await window.electron.invoke('save_pdf', {
+            filename: suggestedName,
+            data: data
+          });
+
+          if (savePath) {
+            showNotification('File saved successfully!');
+            console.log('FireDocs: File saved to:', savePath);
+            return true;
+          }
+          return false;
+        } else {
+          console.warn('IPC API not found.');
+          alert('IPC API not found. Cannot save natively.');
+          return false;
+        }
+      } catch (err) {
+        if (err !== 'Cancelled' && err.message !== 'Cancelled') {
+          console.error('Save Error:', err);
+          showNotification('Error saving file: ' + err.message);
+        }
+        return false;
+      }
+    };
+
+    const hasUnsavedChanges = () => {
+      if (!window.PDFViewerApplication || !window.PDFViewerApplication.pdfDocument) return false;
+      const storage = window.PDFViewerApplication.pdfDocument.annotationStorage;
+      return storage && storage.size > 0;
+    };
+
+    let isLeaving = false;
+
+    const beforeUnloadHandler = (e) => {
+      if (hasUnsavedChanges() && !isLeaving) {
+        console.log('FireDocs: beforeunload blocked navigation');
+        e.preventDefault();
+        e.returnValue = '';
+        return '';
+      }
+    };
+
+    window.addEventListener('beforeunload', beforeUnloadHandler);
+
+    const confirmLeave = async () => {
+      // If there are no unsaved changes, we can proceed.
+      if (!hasUnsavedChanges()) {
+        return true;
+      }
+
+      if (!window.electron?.invoke) {
+        const confirmed = confirm('You have unsaved changes. Are you sure you want to leave?');
+        if (confirmed) {
+          isLeaving = true;
+          window.removeEventListener('beforeunload', beforeUnloadHandler);
+        }
+        return confirmed;
+      }
+
+      const choice = await window.electron.invoke('confirm_discard', {
+        title: 'Unsaved Changes',
+        message: 'You have modified this PDF. Do you want to save your changes?'
+      });
+
+      console.log('FireDocs: confirmLeave result:', choice);
+
+      if (choice === 'save') {
+        const saved = await performSave();
+        if (saved) {
+          isLeaving = true;
+          window.removeEventListener('beforeunload', beforeUnloadHandler);
+        }
+        return saved;
+      } else if (choice === 'discard') {
+        console.log('FireDocs: Force discarding changes via IPC navigation.');
+        isLeaving = true;
+        window.removeEventListener('beforeunload', beforeUnloadHandler);
+        window.onbeforeunload = null;
+
+        // Use the Main process to navigate for guaranteed success
+        if (window.electron) {
+          try {
+            console.log('FireDocs: Invoking navigate_to_home...');
+            await window.electron.invoke('navigate_to_home');
+          } catch (err) {
+            console.error('FireDocs: navigate_to_home failed:', err);
+            window.location.href = '../../homepage.html';
+          }
+        }
+        return true;
+      } else {
+        console.log('FireDocs: User cancelled leave dialog.');
+        return false;
+      }
+    };
 
     // Add Home button functionality
     const homeButton = document.getElementById('homeButton');
     if (homeButton) {
-      homeButton.addEventListener('click', function () {
-        // In Electron, load the startpage
-        if (window.location.protocol === 'file:') {
-          // Go up from pdfjs/web/ to project root and open homepage.html
-          window.location.href = '../../homepage.html';
-        } else {
-          // In browser, go to the root
-          window.location.href = '/homepage.html';
+      homeButton.addEventListener('click', async function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (await confirmLeave()) {
+          // If we are here, it means we either:
+          // 1. Had no changes (confirmLeave returned true immediately)
+          // 2. Saved successfully (confirmLeave returned true)
+          // 3. Discarded (confirmLeave returned true AND triggered navigation already)
+
+          // In cases 1 and 2, isLeaving will be false, so we navigate.
+          // In case 3, isLeaving will be true, and navigation already happened in confirmLeave.
+          if (!isLeaving) {
+            isLeaving = true;
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
+            window.onbeforeunload = null;
+
+            if (window.electron) {
+              window.electron.invoke('navigate_to_home');
+            } else {
+              const target = '../../homepage.html';
+              console.log('FireDocs: Navigating to:', target);
+              window.location.href = target;
+            }
+          }
         }
       });
       console.log('Home button initialized');
     }
 
-    // --- Custom File Loading via Tauri FS (Chunked) ---
+    // Handle Electron window close via IPC
+    if (window.electron) {
+      window.electron.on('request-close', async () => {
+        if (await confirmLeave()) {
+          isLeaving = true;
+          window.removeEventListener('beforeunload', beforeUnloadHandler);
+          window.onbeforeunload = null;
+          window.electron.send('window-close-final');
+        }
+      });
+    }
+
+    // --- Custom File Loading via Electron FS (Chunked) ---
     const urlParams = new URLSearchParams(window.location.search);
     const pdfPath = urlParams.get('pdfPath');
 
-    if (pdfPath && window.__TAURI__) {
-      console.log('Detected pdfPath, attempting custom chunked load:', pdfPath);
+    if (pdfPath && window.electron) {
+      console.log('Detected pdfPath:', pdfPath, typeof pdfPath);
 
-      const invoke = window.__TAURI__.core?.invoke || window.__TAURI__.invoke;
-      console.log('Detected pdfPath, attempting custom chunked load:', pdfPath);
-      if (!invoke) alert('Error: Tauri invoke not found!');
+      console.log('Invoking get_file_metadata with:', { path: pdfPath });
       const INITIAL_CHUNK_SIZE = 65536; // 64KB start
 
-      invoke('get_file_metadata', { path: pdfPath })
+      window.electron.invoke('get_file_metadata', { path: pdfPath })
         .then(metadata => {
           console.log('Metadata received:', metadata);
           if (!metadata) {
@@ -79,7 +273,7 @@ class TauriRangeTransport extends PDFDataRangeTransport {
           const totalSize = metadata.size;
 
           // 2. Initialize Transport with empty data to force standard loading
-          const transport = new TauriRangeTransport(pdfPath, totalSize, []);
+          const transport = new ElectronRangeTransport(pdfPath, totalSize, []);
 
           // 3. Open in Viewer
           let attempts = 0;
@@ -101,6 +295,7 @@ class TauriRangeTransport extends PDFDataRangeTransport {
               document.title = filename;
             } else if (attempts > 100) {
               clearInterval(checkApp);
+              console.error('Timeout waiting for PDFViewerApplication');
               alert('Timeout waiting for PDFViewerApplication');
             }
           }, 100);
@@ -275,7 +470,7 @@ class TauriRangeTransport extends PDFDataRangeTransport {
         const numPages = parseInt(numPagesElement.textContent);
         if (numPages > 0 && totalPages !== numPages) {
           totalPages = numPages;
-          console.log(`FireDoc: Loaded PDF with ${totalPages} pages`);
+          console.log(`FireDocs: Loaded PDF with ${totalPages} pages`);
 
           // Show notification for large PDFs
           if (totalPages > 100) {
@@ -286,53 +481,6 @@ class TauriRangeTransport extends PDFDataRangeTransport {
       numPagesObserver.observe(numPagesElement, { childList: true, characterData: true, subtree: true });
     }
 
-    // Notification system
-    function showNotification(message, duration = 3000) {
-      const notification = document.createElement('div');
-      notification.textContent = message;
-      notification.style.cssText = `
-        position: fixed;
-        top: 80px;
-        right: 20px;
-        background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
-        color: white;
-        padding: 12px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 16px rgba(88, 101, 242, 0.4);
-        z-index: 10000;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        animation: slideInRight 0.3s ease, fadeOut 0.3s ease ${duration - 300}ms forwards;
-      `;
-
-      const style = document.createElement('style');
-      style.textContent = `
-        @keyframes slideInRight {
-          from {
-            transform: translateX(400px);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-        @keyframes fadeOut {
-          to {
-            opacity: 0;
-            transform: translateX(400px);
-          }
-        }
-      `;
-      document.head.appendChild(style);
-      document.body.appendChild(notification);
-
-      setTimeout(() => {
-        notification.remove();
-        style.remove();
-      }, duration);
-    }
 
     // Let PDF.js handle mouse wheel zoom with its original implementation
     if (viewerContainer) {
@@ -345,7 +493,7 @@ class TauriRangeTransport extends PDFDataRangeTransport {
       setTimeout(() => {
         const title = document.title;
         if (title && title !== 'PDF.js viewer') {
-          console.log(`FireDoc: "${title}"`);
+          console.log(`FireDocs: "${title}"`);
         }
       }, 500);
     });
@@ -358,44 +506,22 @@ class TauriRangeTransport extends PDFDataRangeTransport {
       });
     }
 
+
     const secondaryDownload = document.getElementById('secondaryDownload');
     if (secondaryDownload) {
       secondaryDownload.addEventListener('click', async function (e) {
         e.preventDefault();
         e.stopPropagation();
+        await performSave();
+      }, { capture: true });
+    }
 
-        try {
-          if (!window.PDFViewerApplication || !window.PDFViewerApplication.pdfDocument) {
-            showNotification('Document not ready.');
-            return;
-          }
-
-          showNotification('Preparing to save...');
-
-          // 1. Get PDF data (with annotations)
-          const doc = window.PDFViewerApplication.pdfDocument;
-          const data = await doc.saveDocument(); // Returns Uint8Array
-
-          // 2. Open Save Dialog and Write File via custom command
-          if (window.__TAURI__) {
-            const suggestedName = document.title.endsWith('.pdf') ? document.title : document.title + '.pdf';
-            const savePath = await (window.__TAURI__.core?.invoke || window.__TAURI__.invoke)('save_pdf', {
-              filename: suggestedName,
-              data: Array.from(data)
-            });
-
-            if (savePath) {
-              showNotification('File saved successfully!');
-              console.log('File saved to:', savePath);
-            }
-          } else {
-            console.warn('Tauri API not found, falling back to default download.');
-            alert('Tauri API not found. Cannot save natively.');
-          }
-        } catch (err) {
-          console.error('Save Error:', err);
-          showNotification('Error saving file: ' + err.message);
-        }
+    const downloadButton = document.getElementById('downloadButton');
+    if (downloadButton) {
+      downloadButton.addEventListener('click', async function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        await performSave();
       }, { capture: true });
     }
 

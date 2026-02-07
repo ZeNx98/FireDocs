@@ -21,22 +21,18 @@ yarn-error.log
 .env
 .env.local
 
-# Rust / Tauri
+# Electron
+release/
+*.log
+
+# Rust / Tauri (Legacy)
 src-tauri/target/
 target/
 **/*.rs.bk
-# Cargo.lock (Tracked for App Consistency)
-# Cargo.lock
-
-
-# Tauri Releated
-src-tauri/gen/android/
-src-tauri/gen/schemas/
 
 # Makepkg / Arch Build Artifacts
 /src/
-/FireDoc/
+/FireDocs/
 /pkg/src/
 /pkg/pkg/
 *.pkg.tar.zst
-*.log

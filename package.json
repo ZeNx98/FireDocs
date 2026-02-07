@@ -1,22 +1,44 @@
 {
-  "name": "firedoc",
-  "productName": "FireDoc",
-  "version": "3.2.2",
-  "description": "FireDoc: Minimalist PDF Viewer",
+  "name": "firedocs",
+  "productName": "FireDocs",
+  "version": "2.1.0",
+  "description": "FireDocs: Minimalist PDF Viewer",
   "private": true,
   "author": "ZeNx98 <zenx98x@gmail.com> (https://github.com/ZeNx98)",
-  "homepage": "https://github.com/ZeNx98/FireDoc",
+  "homepage": "https://github.com/ZeNx98/FireDocs",
   "type": "module",
+  "main": "src-electron/main.cjs",
   "scripts": {
-    "tauri": "tauri"
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "com.zenx98.firedocs",
+    "productName": "FireDocs",
+    "directories": {
+      "output": "dist"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "pacman"
+      ],
+      "icon": "web/icon.png",
+      "category": "Office"
+    },
+    "files": [
+      "**/*",
+      "!pkg/*",
+      "!.git/*",
+      "!dist/*",
+      "!src-tauri/*"
+    ]
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.10.0"
-  },
-  "dependencies": {
-    "@tauri-apps/api": "^2.10.1",
-    "@tauri-apps/plugin-dialog": "^2.6.0",
-    "@tauri-apps/plugin-fs": "^2.4.5",
-    "@tauri-apps/plugin-shell": "^2.3.5"
+    "electron": "^40.2.1",
+    "electron-builder": "^26.7.0"
   }
 }

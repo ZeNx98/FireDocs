@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FireDoc</title>
+    <title>FireDocs</title>
     <script>
         window.onerror = function (message, source, lineno, colno, error) {
             alert('Error: ' + message + '\nSource: ' + source + '\nLine: ' + lineno);
@@ -28,6 +28,31 @@
             --border-radius: 16px;
             --transition: all 0.2s ease;
             /* Faster, simpler transition */
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: transparent;
         }
 
         body {
@@ -128,6 +153,7 @@
             width: 100%;
             max-width: 700px;
             height: 300px;
+            flex-shrink: 0;
             background: rgba(30, 30, 30, 0.6);
             backdrop-filter: blur(12px);
             border: 2px dashed rgba(255, 255, 255, 0.1);
@@ -494,10 +520,91 @@
 
         input:checked+.slider {
             background-image: var(--primary-gradient);
+            box-shadow: 0 0 12px var(--primary-glow);
         }
 
         input:checked+.slider:before {
             transform: translateX(20px);
+        }
+
+        .settings-select {
+            background: var(--surface-hover);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .settings-select:focus {
+            border-color: var(--primary-color);
+        }
+
+        @media (max-height: 800px),
+        (max-height: 800px) {
+            header {
+                padding: 1rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .header-controls {
+                top: 1rem;
+                right: 1rem;
+            }
+
+            .brand-icon {
+                width: 60px;
+                height: 60px;
+            }
+
+            .brand-text {
+                font-size: 2rem;
+            }
+
+            main {
+                gap: 1.5rem;
+                padding: 0.5rem 2rem;
+            }
+
+            .drop-zone {
+                height: 220px;
+                border-radius: 24px;
+            }
+
+            .drop-icon {
+                font-size: 2.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .drop-icon svg {
+                width: 48px;
+                height: 48px;
+            }
+
+            .drop-title {
+                font-size: 1.25rem;
+            }
+
+            .btn-browse {
+                margin-top: 1.5rem;
+                padding: 0.8rem 2rem;
+            }
+
+            .recents-container {
+                margin-bottom: 1rem;
+            }
+
+            .recent-card {
+                padding: 0.8rem;
+            }
+
+            .recent-icon {
+                width: 36px;
+                height: 36px;
+            }
         }
     </style>
 </head>
@@ -523,8 +630,8 @@
             </button>
         </div>
         <div class="brand">
-            <img src="icon.png" alt="FireDoc Logo" class="brand-icon">
-            <div class="brand-text">FireDoc</div>
+            <img src="icon.png" alt="FireDocs Logo" class="brand-icon">
+            <div class="brand-text">FireDocs</div>
         </div>
     </header>
 
@@ -547,59 +654,66 @@
                         <line x1="12" y1="3" x2="12" y2="15" />
                     </svg>
                 </div>
-                <div class="drop-title">Drop your PDF here</div>
-                <div class="drop-subtitle">or select a file to start reading</div>
-                <button class="btn-browse" id="openBtn">Browse Files</button>
+                <div class="drop-title" data-i18n="dropTitle">Drop your PDF here</div>
+                <div class="drop-subtitle" data-i18n="dropSubtitle">or select a file to start reading</div>
+                <button class="btn-browse" id="openBtn" data-i18n="browseFiles">Browse Files</button>
             </div>
         </div>
 
         <div class="recents-container">
             <div class="recents-header">
-                <div class="recents-title">Continue Reading</div>
-                <button class="btn-clear-all" id="clearRecentsBtn" title="Clear Recent Files">Clear All</button>
+                <div class="recents-title" data-i18n="continueReading">Continue Reading</div>
+                <button class="btn-clear-all" id="clearRecentsBtn" title="Clear Recent Files" data-i18n="clearAll">Clear
+                    All</button>
             </div>
             <div class="recents-list" id="recentsList">
-                <div class="empty-state">No recent files found</div>
+                <div class="empty-state" data-i18n="noRecents">No recent files found</div>
             </div>
         </div>
     </main>
 
     <footer>
         <div class="credits" id="creditsLink">
-            Made with <span class="heart">❤</span> by ZeNx98
+            <span data-i18n="madeWith">Made with</span> <span class="heart">❤</span> <span data-i18n="byZen">by
+                ZeNx98</span>
         </div>
     </footer>
 
     <!-- About Modal -->
     <div class="modal-overlay" id="aboutModal">
         <div class="modal">
-            <h2>FireDoc</h2>
-            <p>Version 3.2.2</p>
-            <p>A minimalist, blazing fast PDF viewer built with Tauri.</p>
-            <button class="btn-close" id="closeModal">Close</button>
+            <h2>FireDocs</h2>
+            <p>Version 2.1.0</p>
+            <p data-i18n="aboutDescription">A minimalist, blazing fast PDF viewer built with Tauri.</p>
+            <button class="btn-close" id="closeModal" data-i18n="close">Close</button>
         </div>
     </div>
 
     <!-- Settings Modal -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal">
-            <h2>Settings</h2>
+            <h2 data-i18n="settings">Settings</h2>
             <div class="settings-row">
-                <span class="settings-label">Hide System Title Bar</span>
+                <span class="settings-label" data-i18n="language">Language</span>
+                <select class="settings-select" id="languageSelect">
+                    <option value="en">English</option>
+                    <option value="ar">العربية (Arabic)</option>
+                </select>
+            </div>
+            <div class="settings-row">
+                <span class="settings-label" data-i18n="hideTitleBar">Hide System Title Bar</span>
                 <label class="switch">
                     <input type="checkbox" id="hideDecorationsToggle">
                     <span class="slider"></span>
                 </label>
             </div>
-            <button class="btn-close" id="closeSettingsModal">Close</button>
+            <button class="btn-close" id="closeSettingsModal" data-i18n="close">Close</button>
         </div>
     </div>
 
     <script>
-        // Tauri Integration
-        const invoke = window.__TAURI__?.core?.invoke || window.__TAURI__?.invoke || ((cmd, args) => { console.log('Mock/Browser invoke:', cmd, args); return Promise.resolve(null); });
-        const listen = window.__TAURI__?.event?.listen || (() => { });
-        const shell = window.__TAURI__?.shell; // Access shell API
+        // Electron Integration
+        const invoke = window.electron?.invoke || ((cmd, args) => { console.log('Mock/Browser invoke:', cmd, args); return Promise.resolve(null); });
 
         const dropZone = document.getElementById('dropZone');
         const openBtn = document.getElementById('openBtn');
@@ -614,41 +728,107 @@
         const creditsLink = document.getElementById('creditsLink');
         const hideDecorationsToggle = document.getElementById('hideDecorationsToggle');
 
+        const languageSelect = document.getElementById('languageSelect');
+
         let recents = [];
+
+        const translations = {
+            en: {
+                dropTitle: "Drop your PDF here",
+                dropSubtitle: "or select a file to start reading",
+                browseFiles: "Browse Files",
+                continueReading: "Continue Reading",
+                clearAll: "Clear All",
+                noRecents: "No recent files found",
+                madeWith: "Made with",
+                byZen: "by ZeNx98",
+                aboutDescription: "A minimalist, blazing fast PDF viewer built with Electron.",
+                close: "Close",
+                settings: "Settings",
+                language: "Language",
+                hideTitleBar: "Hide System Title Bar",
+                confirmClear: "Clear all recent files?",
+                confirmRemove: "Remove this file from recents?"
+            },
+            ar: {
+                dropTitle: "أفلت ملف PDF هنا",
+                dropSubtitle: "أو اختر ملفاً لبدء القراءة",
+                browseFiles: "تصفح الملفات",
+                continueReading: "متابعة القراءة",
+                clearAll: "مسح الكل",
+                noRecents: "لا توجد ملفات حديثة",
+                madeWith: "صنع بـ",
+                byZen: "بواسطة ZeNx98",
+                aboutDescription: "عارض PDF بسيط وسريع للغاية مبني بـ Electron.",
+                close: "إغلاق",
+                settings: "الإعدادات",
+                language: "اللغة",
+                hideTitleBar: "إخفاء شريط العنوان",
+                confirmClear: "هل أنت متأكد من مسح جميع الملفات الحديثة؟",
+                confirmRemove: "هل تريد إزالة هذا الملف من القائمة؟"
+            }
+        };
 
         async function init() {
             loadRecents();
-            renderRecents();
+            // renderRecents() is called inside setLanguage because noRecents text needs translation
             loadSettings();
             setupListeners();
         }
 
         function loadSettings() {
-            const hideDecorations = localStorage.getItem('fireDoc_hideDecorations') === 'true';
+            const hideDecorations = localStorage.getItem('fireDocs_hideDecorations') === 'true';
             hideDecorationsToggle.checked = hideDecorations;
             if (hideDecorations) {
                 applyDecorations(false);
             }
+
+            const storedLang = localStorage.getItem('fireDocs_language') || 'en';
+            languageSelect.value = storedLang;
+            setLanguage(storedLang);
         }
 
         function saveSettings() {
-            localStorage.setItem('fireDoc_hideDecorations', hideDecorationsToggle.checked);
+            localStorage.setItem('fireDocs_hideDecorations', hideDecorationsToggle.checked);
         }
 
+        function setLanguage(lang) {
+            const t = translations[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.textContent = t[key];
+            });
+
+            // Update Direction
+            if (lang === 'ar') {
+                document.body.dir = 'rtl';
+            } else {
+                document.body.dir = 'ltr';
+            }
+
+            // Save preference
+            localStorage.setItem('fireDoc_language', lang);
+
+            // Re-render recents to update "No recent files found" if needed
+            renderRecents();
+        }
+
+
         async function applyDecorations(show) {
-            if (window.__TAURI__) {
-                const { getCurrentWindow } = window.__TAURI__.window;
-                const win = getCurrentWindow();
-                await win.setDecorations(show);
-                // Also optionally handle shadow if needed for some platforms
-                if (win.setShadow) await win.setShadow(show);
+            // Electron: Toggle menu bar visibility via main process
+            if (window.electron) {
+                try {
+                    await window.electron.invoke('set_titlebar_visible', show);
+                } catch (e) {
+                    console.error('Failed to toggle titlebar:', e);
+                }
             }
         }
 
         async function openPdf(path) {
             try {
-                if (!window.__TAURI__) {
-                    alert('This feature requires the app to be running in Tauri.');
+                if (!window.electron) {
+                    alert('This feature requires the app to be running in Electron.');
                     return;
                 }
 
@@ -684,7 +864,9 @@
         }
 
         function clearRecents() {
-            if (confirm('Clear all recent files?')) {
+            const currentLang = languageSelect.value;
+            const msg = translations[currentLang].confirmClear;
+            if (confirm(msg)) {
                 recents = [];
                 saveRecents();
                 renderRecents();
@@ -693,7 +875,9 @@
 
         function removeRecent(index, event) {
             event.stopPropagation(); // Prevent opening the file
-            if (confirm('Remove this file from recents?')) {
+            const currentLang = languageSelect.value;
+            const msg = translations[currentLang].confirmRemove;
+            if (confirm(msg)) {
                 recents.splice(index, 1);
                 saveRecents();
                 renderRecents();
@@ -705,8 +889,9 @@
         window.openPdf = openPdf;
 
         function renderRecents() {
+            const currentLang = languageSelect.value;
             if (recents.length === 0) {
-                recentsList.innerHTML = '<div class="empty-state">No recent files found</div>';
+                recentsList.innerHTML = `<div class="empty-state" data-i18n="noRecents">${translations[currentLang].noRecents}</div>`;
                 clearRecentsBtn.style.display = 'none';
                 return;
             }
@@ -775,6 +960,12 @@
         }
 
         function setupListeners() {
+            hideDecorationsToggle.addEventListener('change', () => {
+                const isHidden = hideDecorationsToggle.checked;
+                applyDecorations(!isHidden);
+                saveSettings(); // This saves 'true' if checked (hidden)
+            });
+
             openBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 handleOpenClick();
@@ -789,11 +980,7 @@
 
             creditsLink.addEventListener('click', () => {
                 const url = 'https://github.com/ZeNx98';
-                if (shell && shell.open) {
-                    shell.open(url);
-                } else {
-                    window.open(url, '_blank');
-                }
+                window.open(url, '_blank');
             });
 
             // Modals
@@ -807,6 +994,10 @@
             closeSettingsModal.addEventListener('click', () => settingsModal.classList.remove('active'));
             settingsModal.addEventListener('click', (e) => {
                 if (e.target === settingsModal) settingsModal.classList.remove('active');
+            });
+
+            languageSelect.addEventListener('change', (e) => {
+                setLanguage(e.target.value);
             });
 
             hideDecorationsToggle.addEventListener('change', () => {
@@ -827,14 +1018,25 @@
             dropZone.addEventListener('drop', (e) => {
                 e.preventDefault();
                 dropZone.classList.remove('drag-over');
+
+                if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+                    const file = e.dataTransfer.files[0];
+                    // Electron exposes 'path' property on File objects
+                    if (file.path && file.path.toLowerCase().endsWith('.pdf')) {
+                        openPdf(file.path);
+                    } else {
+                        alert('Please drop a PDF file.');
+                    }
+                }
             });
 
             if (window.__TAURI__) {
                 listen('tauri://file-drop', event => {
                     const paths = event.payload;
                     if (paths && paths.length > 0) {
-                        if (paths[0].toLowerCase().endsWith('.pdf')) {
-                            openPdf(paths[0]);
+                        const path = paths[0];
+                        if (path.toLowerCase().endsWith('.pdf')) {
+                            openPdf(path);
                         } else {
                             alert('Please drop a PDF file.');
                         }

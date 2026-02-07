@@ -1,4 +1,4 @@
-/* FireDoc Homepage Theme Port */
+/* FireDocs Homepage Theme Port */
 /* Matches the dark/orange aesthetic of homepage.html */
 
 :root {
@@ -262,17 +262,15 @@ textarea {
 }
 
 .page {
-  border: 9px solid transparent !important;
-  border-image: none !important;
-  border-radius: 8px !important;
-  background-clip: content-box !important;
+  border: none !important;
+  border-radius: 4px !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
   margin-bottom: 25px !important;
 }
 
-/* Fix Pen Tool Offset by shifting the layer down */
+/* Fix Pen Tool Offset - Reset to check natural state */
 .annotationEditorLayer {
-  transform: translateY(-15px) !important;
+  transform: none !important;
 }
 
 /* --- Loading Bar --- */
@@ -380,19 +378,103 @@ textarea {
 }
 
 /* Sliders */
+/* Sliders */
 .editorParamsToolbar input[type="range"] {
-  accent-color: var(--primary-color) !important;
-  height: 4px !important;
-  border-radius: 2px !important;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 20px;
+  /* Height to container thumb */
+  background: transparent;
+  outline: none;
+  margin: 4px 0;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* WebKit Track */
+.editorParamsToolbar input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+}
+
+/* WebKit Thumb */
+.editorParamsToolbar input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  cursor: pointer;
+  margin-top: -6px;
+  /* (4px track - 16px thumb) / 2 */
+  box-shadow: 0 0 10px var(--primary-glow);
+  border: 2px solid var(--surface-color);
+  /* Ring for contrast */
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.editorParamsToolbar input[type="range"]:focus::-webkit-slider-thumb,
+.editorParamsToolbar input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 15px var(--primary-glow);
+}
+
+/* Mozilla Track */
+.editorParamsToolbar input[type="range"]::-moz-range-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Mozilla Thumb */
+.editorParamsToolbar input[type="range"]::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border: 2px solid var(--surface-color);
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  cursor: pointer;
+  box-shadow: 0 0 10px var(--primary-glow);
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.editorParamsToolbar input[type="range"]:focus::-moz-range-thumb,
+.editorParamsToolbar input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 15px var(--primary-glow);
 }
 
 /* Color Pickers */
 .editorParamsColor {
+  -webkit-appearance: none;
+  appearance: none;
   border: 2px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 50% !important;
-  width: 24px !important;
-  height: 24px !important;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  overflow: hidden;
+}
+
+.editorParamsColor::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.editorParamsColor::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
 }
 
 .editorParamsColor:hover {
@@ -635,4 +717,29 @@ textarea {
 .disable-ink-selection .inkEditor:not(.editing).selectedEditor {
   outline: none !important;
   box-shadow: none !important;
+}
+
+/* Disable horizontal scrolling in the viewer */
+/* Disable horizontal scrolling globally and in viewer */
+html,
+body,
+#outerContainer {
+  overflow-x: hidden !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+}
+
+#viewerContainer {
+  overflow-x: auto !important;
+  /* Allow scroll if content (zoomed page) is wider */
+  overflow-y: scroll !important;
+  /* Always show vertical scrollbar track for stability */
+}
+
+/* Hide horizontal scrollbar specifically */
+#viewerContainer::-webkit-scrollbar:horizontal {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  background: transparent !important;
 }
