@@ -31,11 +31,12 @@ jobs:
           node-version: 20
 
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
         with:
-          toolchain: stable
-          profile: minimal
-          override: true
+          workspaces: './src-tauri -> target'
 
       - name: Install frontend dependencies
         run: npm install
@@ -45,8 +46,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: 'FireDoc ${{ github.ref_name }}'
+          tagName: v__VERSION__ # This will be replaced by the version in package.json if tagName is not provided
+          releaseName: 'FireDoc v__VERSION__'
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false

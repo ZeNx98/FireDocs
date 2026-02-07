@@ -48,10 +48,29 @@ See https://github.com/adobe-type-tools/cmap-resources
 
 <body tabindex="0">
   <div id="outerContainer">
+    <div class="window-controls" id="windowControls" style="display: none;">
+      <div class="window-control" id="winMinBtn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </div>
+      <div class="window-control" id="winMaxBtn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="4" y="4" width="16" height="16" rx="1"></rect>
+        </svg>
+      </div>
+      <div class="window-control close" id="winCloseBtn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </div>
+    </div>
+
     <span id="viewer-alert" class="visuallyHidden" role="alert"></span>
 
     <div id="sidebarContainer">
-      <div id="toolbarSidebar" class="toolbarHorizontalGroup">
+      <div id="toolbarSidebar" class="toolbarHorizontalGroup" data-tauri-drag-region>
         <div id="toolbarSidebarLeft">
           <div id="sidebarViewButtons" class="toolbarHorizontalGroup toggled" role="radiogroup">
             <button id="viewThumbnail" class="toolbarButton toggled" type="button" tabindex="0"
@@ -101,7 +120,7 @@ See https://github.com/adobe-type-tools/cmap-resources
     <div id="mainContainer">
       <div class="toolbar">
         <div id="toolbarContainer">
-          <div id="toolbarViewer" class="toolbarHorizontalGroup">
+          <div id="toolbarViewer" class="toolbarHorizontalGroup" data-tauri-drag-region>
             <div id="toolbarViewerLeft" class="toolbarHorizontalGroup">
               <button id="sidebarToggleButton" class="toolbarButton" type="button" tabindex="0"
                 data-l10n-id="pdfjs-toggle-sidebar-button" aria-expanded="false" aria-haspopup="true"
