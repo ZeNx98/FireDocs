@@ -1,11 +1,47 @@
+import { PDFDataRangeTransport } from '../build/pdf.mjs';
+
 // FireDoc Custom PDF.js Viewer Enhancements
 // Additional functionality and UX improvements
+
+// Define Custom Transport for efficient chunked loading
+class TauriRangeTransport extends PDFDataRangeTransport {
+  constructor(path, length, initialData) {
+    super(length, initialData);
+    this.path = path;
+    console.log(`🚚 TauriRangeTransport initialized for ${path} (${length} bytes)`);
+  }
+
+  requestDataRange(begin, end) {
+    const length = end - begin;
+    // console.log(`REQUEST CHUNK: ${begin}-${end}`);
+    window.__TAURI__.invoke('read_file_chunk', {
+      path: this.path,
+      offset: begin,
+      length: length
+    })
+      .then(base64Data => {
+        // Decode base64
+        const binaryString = atob(base64Data);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        // console.log(`RECEIVED CHUNK: ${begin}-${end} (${bytes.length} bytes)`);
+        this.onDataRange(begin, bytes);
+      })
+      .catch(err => {
+        console.error('❌ Chunk read error:', err);
+      });
+  }
+}
 
 (function () {
   'use strict';
 
   // Wait for PDF.js to fully load
-  document.addEventListener('DOMContentLoaded', function () {
+  const initEnhancements = function () {
+    console.log('✨ FireDoc Enhancements initializing...');
 
     // Add Home button functionality
     const homeButton = document.getElementById('homeButton');
@@ -21,6 +57,54 @@
         }
       });
       console.log('🏠 Home button initialized');
+    }
+
+    // --- Custom File Loading via Tauri FS (Chunked) ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const pdfPath = urlParams.get('pdfPath');
+
+    if (pdfPath && window.__TAURI__) {
+      console.log('📂 Detected pdfPath, attempting custom chunked load:', pdfPath);
+
+      const invoke = window.__TAURI__.invoke;
+      const INITIAL_CHUNK_SIZE = 65536; // 64KB start
+
+      // 1. Get Metadata (size)
+      invoke('get_file_metadata', { path: pdfPath })
+        .then(metadata => {
+          console.log('✅ Metadata received:', metadata);
+          const totalSize = metadata.size;
+
+          // 2. Initialize Transport with empty data to force standard loading
+          const transport = new TauriRangeTransport(pdfPath, totalSize, []);
+
+          // 3. Open in Viewer
+          let attempts = 0;
+          const checkApp = setInterval(() => {
+            attempts++;
+            if (window.PDFViewerApplication && window.PDFViewerApplication.open) {
+              clearInterval(checkApp);
+              console.log('🚀 PDFViewerApplication ready. Opening PDF with Transport...');
+
+              const openPdf = () => window.PDFViewerApplication.open({ range: transport });
+
+              if (window.PDFViewerApplication.close) {
+                window.PDFViewerApplication.close().then(openPdf).catch(openPdf);
+              } else {
+                openPdf();
+              }
+
+              const filename = pdfPath.split(/[\\/]/).pop();
+              document.title = filename;
+            } else if (attempts > 100) {
+              clearInterval(checkApp);
+              alert('Timeout waiting for PDFViewerApplication');
+            }
+          }, 100);
+        })
+        .catch(err => {
+          alert('IPC/Metadata Error: ' + err);
+        });
     }
 
     // Enhanced keyboard shortcuts
@@ -158,10 +242,9 @@
 
     // Double-click on page to toggle fit modes
     const viewerContainer = document.getElementById('viewerContainer');
-    if (viewerContainer) {
-      // Double-click to zoom disabled (User request)
-      // const viewerContainer defined above for other uses
-    }
+    // if (viewerContainer) {
+    //   // Double-click to zoom disabled (User request)
+    // }
 
     // Add current page highlight in sidebar thumbnails
     const thumbnailView = document.getElementById('thumbnailView');
@@ -254,10 +337,8 @@
     }
 
     // Let PDF.js handle mouse wheel zoom with its original implementation
-    // PDF.js has built-in Ctrl+wheel zoom that works properly
-    // We just ensure normal scrolling works when Ctrl is not held
     if (viewerContainer) {
-      // No custom zoom handler needed - PDF.js handles it natively
+      // No custom zoom handler needed
       console.log('Using PDF.js native zoom controls');
     }
 
@@ -279,16 +360,62 @@
       });
     }
 
-    // Enhanced download button
-    const downloadButton = document.getElementById('downloadButton');
-    if (downloadButton) {
-      downloadButton.addEventListener('click', function () {
-        showNotification('Download started...');
+    // Enhanced download button (Native Save As) - Moved to Secondary Toolbar
+    const secondaryDownload = document.getElementById('secondaryDownload');
+    if (secondaryDownload) {
+      secondaryDownload.addEventListener('click', async function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        try {
+          if (!window.PDFViewerApplication || !window.PDFViewerApplication.pdfDocument) {
+            showNotification('Document not ready.');
+            return;
+          }
+
+          showNotification('Preparing to save...');
+
+          // 1. Get PDF data (with annotations)
+          const doc = window.PDFViewerApplication.pdfDocument;
+          const data = await doc.saveDocument(); // Returns Uint8Array
+
+          // 2. Open Save Dialog
+          if (window.__TAURI__ && window.__TAURI__.dialog) {
+            const suggestedName = document.title.endsWith('.pdf') ? document.title : document.title + '.pdf';
+
+            const savePath = await window.__TAURI__.dialog.save({
+              defaultPath: suggestedName,
+              filters: [{ name: 'PDF Document', extensions: ['pdf'] }]
+            });
+
+            if (savePath) {
+              // 3. Write File
+              await window.__TAURI__.fs.writeBinaryFile(savePath, data);
+              showNotification('File saved successfully! 💾');
+              console.log('✅ File saved to:', savePath);
+            } else {
+              showNotification('Save cancelled.');
+            }
+          } else {
+            console.warn('Tauri API not found, falling back to default download.');
+            alert('Tauri API not found. Cannot save natively.');
+          }
+        } catch (err) {
+          console.error('Save Error:', err);
+          showNotification('Error saving file: ' + err.message);
+        }
+      }, { capture: true });
+    }
+
+    // Enhanced Print (Secondary)
+    const secondaryPrint = document.getElementById('secondaryPrint');
+    if (secondaryPrint) {
+      secondaryPrint.addEventListener('click', function () {
+        showNotification('Preparing to print...');
       });
     }
 
     // --- Right-Click Pan Support (Global Hand Tool) ---
-    // Allows panning with right-click regardless of selected tool
     if (viewerContainer) {
       let isRightPanning = false;
       let panStartX = 0;
@@ -296,7 +423,7 @@
       let panStartScrollLeft = 0;
       let panStartScrollTop = 0;
       let hasDragged = false;
-      const DEADZONE = 5; // Pixels to move before panning starts
+      const DEADZONE = 5;
 
       viewerContainer.addEventListener('mousedown', function (e) {
         if (e.button === 2) { // Right Click
@@ -306,7 +433,6 @@
           panStartY = e.clientY;
           panStartScrollLeft = viewerContainer.scrollLeft;
           panStartScrollTop = viewerContainer.scrollTop;
-          // Note: We don't prevent default here to allow context menu if no drag occurs
         }
       });
 
@@ -316,11 +442,10 @@
         const dx = e.clientX - panStartX;
         const dy = e.clientY - panStartY;
 
-        // Check if moved enough to consider it a drag
         if (!hasDragged && (Math.abs(dx) > DEADZONE || Math.abs(dy) > DEADZONE)) {
           hasDragged = true;
           viewerContainer.style.cursor = 'grabbing';
-          document.body.style.userSelect = 'none'; // Prevent text selection while panning
+          document.body.style.userSelect = 'none';
         }
 
         if (hasDragged) {
@@ -347,6 +472,215 @@
       });
     }
 
+    // Hide loading bar immediately when document initializes (first page ready)
+    // OR force hide after 3 seconds max (user request)
+    const hideLoadingBar = () => {
+      const loadingBar = document.getElementById('loadingBar');
+      if (loadingBar) {
+        loadingBar.style.opacity = '0';
+        setTimeout(() => {
+          loadingBar.style.setProperty('display', 'none', 'important');
+        }, 500);
+      }
+    };
+
+    // --- Custom Wheel Zoom (Tiny Steps) ---
+    // User Request: "max 20% by a step an min 1%"
+    const addCustomWheelZoom = () => {
+      const viewerContainer = document.getElementById('viewerContainer');
+      if (!viewerContainer) return;
+
+      let rafId = null;
+      let accumulatedTicks = 1;
+      let lastOrigin = [0, 0];
+
+      viewerContainer.addEventListener('wheel', function (e) {
+        // Only trigger if Ctrl or Meta is held
+        if (!e.ctrlKey && !e.metaKey) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!window.PDFViewerApplication || !window.PDFViewerApplication.pdfViewer) return;
+
+        const delta = -e.deltaY;
+        const SENSITIVITY = 0.002;
+        let zoomFactor = Math.exp(delta * SENSITIVITY);
+        let change = zoomFactor - 1;
+
+        const MAX_STEP = 0.20;
+        const MIN_STEP = 0.01;
+
+        if (Math.abs(change) > MAX_STEP) {
+          change = Math.sign(change) * MAX_STEP;
+        } else if (Math.abs(change) < MIN_STEP && Math.abs(change) > 0) {
+          change = Math.sign(change) * MIN_STEP;
+        }
+
+        // Accumulate effect
+        accumulatedTicks *= (1 + change);
+        lastOrigin = [e.clientX, e.clientY];
+
+        if (!rafId) {
+          rafId = requestAnimationFrame(() => {
+            if (window.PDFViewerApplication.updateZoom) {
+              window.PDFViewerApplication.updateZoom(0, accumulatedTicks, lastOrigin);
+            } else {
+              const currentScale = window.PDFViewerApplication.pdfViewer.currentScale;
+              window.PDFViewerApplication.pdfViewer.currentScaleValue = currentScale * accumulatedTicks;
+            }
+            accumulatedTicks = 1;
+            rafId = null;
+          });
+        }
+      }, {
+        passive: false,
+        capture: true
+      }); // Capture phase to intercept before PDF.js
+
+      console.log('🔍 Custom tiny-step zoom enabled (Ctrl+Wheel)');
+    };
+
+    // --- Intelligent Menu Positioning (Overflow Prevention) ---
+    const setupIntelligentMenus = () => {
+      const adjustMenuPosition = (menu) => {
+        if (menu.classList.contains('hidden')) return;
+
+        // Reset offset first to get natural position
+        menu.style.marginLeft = '';
+
+        const rect = menu.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const padding = 20;
+
+        let offset = 0;
+        if (rect.right > viewportWidth - padding) {
+          offset = viewportWidth - padding - rect.right;
+        } else if (rect.left < padding) {
+          offset = padding - rect.left;
+        }
+
+        if (offset !== 0) {
+          menu.style.marginLeft = `${offset}px`;
+        }
+      };
+
+      const menuObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+            const target = mutation.target;
+            if (target.classList.contains('doorHangerRight') || target.classList.contains('editorParamsToolbar')) {
+              // Internal delay to allow layout to settle
+              setTimeout(() => adjustMenuPosition(target), 0);
+            }
+          }
+        });
+      });
+
+      // Watch all menus with .doorHangerRight or .editorParamsToolbar
+      document.querySelectorAll('.doorHangerRight, .editorParamsToolbar').forEach(menu => {
+        menuObserver.observe(menu, { attributes: true, attributeFilter: ['class'] });
+      });
+
+      // Also adjust on window resize
+      window.addEventListener('resize', () => {
+        document.querySelectorAll('.doorHangerRight:not(.hidden), .editorParamsToolbar:not(.hidden)').forEach(adjustMenuPosition);
+      });
+
+      console.log('🧠 Intelligent menus initialized');
+    };
+
+    setupIntelligentMenus();
+
+    // --- Custom Zoom UI Logic ---
+    const setupCustomZoom = () => {
+      const customButton = document.getElementById('customZoomButton');
+      const customMenu = document.getElementById('customZoomMenu');
+      const customValue = document.getElementById('customZoomValue');
+      const nativeSelect = document.getElementById('scaleSelect');
+
+      if (!customButton || !customMenu || !nativeSelect) return;
+
+      // 1. Toggle Menu
+      customButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isHidden = customMenu.classList.toggle('hidden');
+        if (!isHidden) {
+          // Close other menus
+          document.querySelectorAll('.menu:not(#customZoomMenu)').forEach(m => m.classList.add('hidden'));
+        }
+      });
+
+      // 2. Sync Native Select -> Custom Button
+      const updateCustomValue = () => {
+        let text = "";
+        const selectedOption = nativeSelect.options[nativeSelect.selectedIndex];
+
+        if (selectedOption) {
+          text = selectedOption.textContent.trim();
+        }
+
+        // Fallback: If text is empty (e.g. not localized yet) or no selection
+        if (!text || nativeSelect.selectedIndex === -1) {
+          // Check if we have a value we can show
+          if (nativeSelect.value && nativeSelect.value !== "custom") {
+            // Try to find matching option by value
+            for (const opt of nativeSelect.options) {
+              if (opt.value === nativeSelect.value) {
+                text = opt.textContent.trim();
+                break;
+              }
+            }
+          }
+        }
+
+        if (text) {
+          customValue.textContent = text;
+        } else {
+          // Default fallback
+          customValue.textContent = "Auto";
+        }
+      };
+
+      nativeSelect.addEventListener('change', updateCustomValue);
+      // Observe both attribute changes (like value/selected) and childList (re-localization)
+      const selectObserver = new MutationObserver(updateCustomValue);
+      selectObserver.observe(nativeSelect, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+        attributeFilter: ['selected', 'value', 'data-l10n-args']
+      });
+
+      // Seed initial value
+      updateCustomValue();
+
+      // 3. Custom Menu Clicks -> Native Select
+      customMenu.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-value]');
+        if (btn) {
+          const val = btn.getAttribute('data-value');
+          nativeSelect.value = val;
+          nativeSelect.dispatchEvent(new Event('change'));
+          customMenu.classList.add('hidden');
+        }
+      });
+
+      // 4. Close on outside click
+      document.addEventListener('click', (e) => {
+        if (!customButton.contains(e.target) && !customMenu.contains(e.target)) {
+          customMenu.classList.add('hidden');
+        }
+      });
+
+      console.log('🔍 Custom zoom UI initialized');
+    };
+
+    setupCustomZoom();
+
+    // Initialize custom zoom
+    addCustomWheelZoom();
+
     console.log('🔥 FireDoc: Enhanced PDF viewer loaded successfully');
     console.log('📚 Custom keyboard shortcuts:');
     console.log('  • Ctrl/Cmd + 0: Fit to width');
@@ -357,6 +691,13 @@
     console.log('  • F: Toggle search');
     console.log('  • Double-click: Toggle fit modes');
     console.log('  • (Standard PDF.js controls also available)');
-  });
+  }; // End of initEnhancements
+
+  // Check document readiness
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEnhancements);
+  } else {
+    initEnhancements();
+  }
 
 })();

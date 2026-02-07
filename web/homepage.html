@@ -107,6 +107,7 @@
             font-weight: 800;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: -0.03em;
         }
@@ -549,11 +550,17 @@
 
                 addToRecents(path);
 
-                const response = await invoke('prepare_pdf_stream', { path });
+                // Use Tauri's built-in convertFileSrc to handle file paths securely
+                const { convertFileSrc } = window.__TAURI__.tauri;
+                const url = convertFileSrc(path);
 
-                if (response && response.url) {
-                    const viewerUrl = `pdfjs/web/viewer.html?file=${encodeURIComponent(response.url)}`;
+                if (path) {
+                    // Pass using custom parameter 'pdfPath' to handle loading manually via FS API
+                    // Pass file= (empty) to stop PDF.js from loading the default compressed.tracemonkey-pldi-09.pdf
+                    const viewerUrl = `pdfjs/web/viewer.html?file=&pdfPath=${encodeURIComponent(path)}`;
                     window.location.href = viewerUrl;
+                } else {
+                    throw new Error('Failed to convert file path to URL');
                 }
             } catch (err) {
                 console.error('Failed to open PDF:', err);

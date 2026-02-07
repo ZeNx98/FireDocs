@@ -37,13 +37,16 @@ See https://github.com/adobe-type-tools/cmap-resources
   <!-- FireDoc custom viewer enhancements -->
   <link rel="stylesheet" href="custom-viewer-enhancements.css">
   <!-- Font to match homepage styling -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap"
-    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap">
+  <style>
+    :root {
+      --viewer-font: 'Outfit', sans-serif;
+    }
+  </style>
 
   <script src="viewer.mjs" type="module"></script>
   <!-- FireDoc custom viewer enhancements -->
-  <script src="custom-viewer-enhancements.js" defer></script>
+  <script src="custom-viewer-enhancements.js" type="module"></script>
 </head>
 
 <body tabindex="0">
@@ -192,7 +195,31 @@ See https://github.com/adobe-type-tools/cmap-resources
                 </button>
               </div>
               <span id="scaleSelectContainer" class="dropdownToolbarButton">
-                <select id="scaleSelect" tabindex="0" data-l10n-id="pdfjs-zoom-select">
+                <button id="customZoomButton" class="toolbarButton" type="button" tabindex="0">
+                  <span id="customZoomValue">100%</span>
+                  <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+                <div id="customZoomMenu" class="doorHangerRight hidden menu">
+                  <div class="menuContainer">
+                    <!-- Zoom options will be synced here or manually added if static -->
+                    <button class="toolbarButton labeled" type="button" data-value="auto">Auto</button>
+                    <button class="toolbarButton labeled" type="button" data-value="page-actual">Actual Size</button>
+                    <button class="toolbarButton labeled" type="button" data-value="page-fit">Fit Page</button>
+                    <button class="toolbarButton labeled" type="button" data-value="page-width">Fit Width</button>
+                    <div class="horizontalToolbarSeparator"></div>
+                    <button class="toolbarButton labeled" type="button" data-value="1">100%</button>
+                    <button class="toolbarButton labeled" type="button" data-value="1.25">125%</button>
+                    <button class="toolbarButton labeled" type="button" data-value="1.5">150%</button>
+                    <button class="toolbarButton labeled" type="button" data-value="2">200%</button>
+                    <button class="toolbarButton labeled" type="button" data-value="3">300%</button>
+                    <button class="toolbarButton labeled" type="button" data-value="4">400%</button>
+                  </div>
+                </div>
+                <select id="scaleSelect" tabindex="0" data-l10n-id="pdfjs-zoom-select"
+                  style="display: none !important;">
                   <option id="pageAutoOption" value="auto" selected="selected" data-l10n-id="pdfjs-page-scale-auto">
                   </option>
                   <option id="pageActualOption" value="page-actual" data-l10n-id="pdfjs-page-scale-actual"></option>
@@ -200,13 +227,14 @@ See https://github.com/adobe-type-tools/cmap-resources
                   <option id="pageWidthOption" value="page-width" data-l10n-id="pdfjs-page-scale-width"></option>
                   <option id="customScaleOption" value="custom" disabled="disabled" hidden="true"
                     data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 0 }'></option>
-                  <option value="0.5" data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 50 }'></option>
-                  <option value="0.75" data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 75 }'>
-                  </option>
                   <option value="1" data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 100 }'></option>
+                  <option value="1.1" data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 110 }'>
+                  </option>
                   <option value="1.25" data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 125 }'>
                   </option>
                   <option value="1.5" data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 150 }'>
+                  </option>
+                  <option value="1.75" data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 175 }'>
                   </option>
                   <option value="2" data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 200 }'></option>
                   <option value="3" data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 300 }'></option>
@@ -372,7 +400,10 @@ See https://github.com/adobe-type-tools/cmap-resources
 
               <div id="editorModeSeparator" class="verticalToolbarSeparator"></div>
 
-              <div class="toolbarHorizontalGroup hiddenMediumView">
+              <!-- Print and Download moved to secondary menu (User Request) -->
+              <!-- Print and Download moved to secondary menu (User Request) -->
+              <!-- Kept here but hidden to prevent viewer.mjs crash on init -->
+              <div class="toolbarHorizontalGroup" style="display: none !important;">
                 <button id="printButton" class="toolbarButton" type="button" tabindex="0"
                   data-l10n-id="pdfjs-print-button">
                   <span data-l10n-id="pdfjs-print-button-label"></span>
@@ -399,18 +430,19 @@ See https://github.com/adobe-type-tools/cmap-resources
                       <span data-l10n-id="pdfjs-open-file-button-label"></span>
                     </button>
 
-                    <div class="visibleMediumView">
-                      <button id="secondaryPrint" class="toolbarButton labeled" type="button" tabindex="0"
-                        data-l10n-id="pdfjs-print-button">
-                        <span data-l10n-id="pdfjs-print-button-label"></span>
-                      </button>
+                    <!-- Unhidden for all views (User Request) -->
+                    <!-- <div class="visibleMediumView"> -->
+                    <button id="secondaryPrint" class="toolbarButton labeled" type="button" tabindex="0"
+                      data-l10n-id="pdfjs-print-button">
+                      <span data-l10n-id="pdfjs-print-button-label"></span>
+                    </button>
 
-                      <button id="secondaryDownload" class="toolbarButton labeled" type="button" tabindex="0"
-                        data-l10n-id="pdfjs-save-button">
-                        <span data-l10n-id="pdfjs-save-button-label"></span>
-                      </button>
+                    <button id="secondaryDownload" class="toolbarButton labeled" type="button" tabindex="0"
+                      data-l10n-id="pdfjs-save-button">
+                      <span data-l10n-id="pdfjs-save-button-label"></span>
+                    </button>
 
-                    </div>
+                    <!-- </div> -->
 
                     <div class="horizontalToolbarSeparator"></div>
 

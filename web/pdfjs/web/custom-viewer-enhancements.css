@@ -1,110 +1,311 @@
-/* FireDoc Custom PDF.js Viewer Enhancements */
-/* RESET STATE: Firefox Dark Theme + Orange Accent ONLY */
-/* Standard Layout - No experimental positioning */
+/* FireDoc Homepage Theme Port */
+/* Matches the dark/orange aesthetic of homepage.html */
 
 :root {
-  /* Firefox Dark Colors */
-  --bg-dark: #1C1B22;
-  --bg-panel: #2B2A33;
-  --bg-hover: #42414d;
-  --border: #52525e;
+  /* Home: House */
+  --toolbarButton-home-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>') !important;
 
-  /* Accent: Orange */
-  --accent: #ff5e00;
-  --accent-faint: rgba(255, 94, 0, 0.15);
-  --accent-strong: rgba(255, 94, 0, 0.25);
+  /* Core Colors from Homepage */
+  --bg-color: #0F0F0F;
+  --surface-color: #1A1A1A;
+  --surface-hover: #262626;
 
-  /* Text */
-  --text-main: #fbfbfe;
+  /* Orange/Fire Theme */
+  --primary-gradient: linear-gradient(135deg, #FF9966 0%, #FF5E62 100%);
+  --primary-color: #FF5E62;
+  --primary-glow: rgba(255, 94, 98, 0.4);
 
-  /* PDF.js Variable Overrides */
-  --body-bg-color: var(--bg-dark) !important;
-  --sidebar-bg-color: var(--bg-panel) !important;
-  --toolbar-bg-color: var(--bg-panel) !important;
-  --toolbar-border-color: var(--border) !important;
-  --button-hover-color: var(--accent) !important;
-  --doorhanger-bg-color: var(--bg-panel) !important;
-  --doorhanger-border-color: var(--border) !important;
-  --main-color: var(--text-main) !important;
-  --scrollbar-bg-color: var(--bg-panel) !important;
-  --scrollbar-color: #cfcfd8 !important;
+  --text-primary: #FFFFFF;
+  --text-secondary: #AAAAAA;
+  --border-radius: 16px;
+
+  /* PDF.js Overrides */
+  --body-bg-color: var(--bg-color) !important;
+  --sidebar-bg-color: var(--surface-color) !important;
+  --toolbar-bg-color: var(--surface-color) !important;
+  /* Single color for toolbar base */
+  --toolbar-driver-bg-color: var(--surface-color) !important;
+  --toolbar-border-color: rgba(255, 255, 255, 0.08) !important;
+  --toolbar-icon-bg: var(--text-secondary) !important;
+  --toolbar-icon-hover-bg: var(--primary-glow) !important;
+
+  --main-color: var(--text-primary) !important;
+  --doorhanger-bg-color: var(--surface-color) !important;
+  --doorhanger-border-color: rgba(255, 255, 255, 0.1) !important;
+
+  --scrollbar-bg-color: transparent !important;
+  --scrollbar-color: #333333 !important;
+
+  /* --- Sidebar Icons (Lucide Style) --- */
+  /* Thumbnail: Layout Grid */
+  --toolbarButton-viewThumbnail-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>') !important;
+
+  /* Outline: List/ToC */
+  --toolbarButton-viewOutline-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>') !important;
+
+  /* Attachments: Paperclip */
+  --toolbarButton-viewAttachments-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>') !important;
+
+  /* Layers: Stack */
+  --toolbarButton-viewLayers-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>') !important;
+
+  /* --- Main Toolbar Icons (Lucide Style) --- */
+  /* Sidebar Toggle: Panel Left */
+  --toolbarButton-sidebarToggle-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>') !important;
+
+  /* Secondary Toolbar: More Vertical */
+  --toolbarButton-secondaryToolbarToggle-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>') !important;
+
+  /* Page Up: Chevron Up */
+  --toolbarButton-pageUp-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>') !important;
+
+  /* Page Down: Chevron Down */
+  --toolbarButton-pageDown-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>') !important;
+
+  /* Zoom Out: Minus */
+  --toolbarButton-zoomOut-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>') !important;
+
+  /* Zoom In: Plus */
+  --toolbarButton-zoomIn-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>') !important;
+
+  /* Presentation: Maximize */
+  --toolbarButton-presentationMode-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>') !important;
+
+  /* Print: Printer */
+  --toolbarButton-print-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>') !important;
+
+  /* Open File: Folder Open */
+  --toolbarButton-openFile-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H18a2 2 0 0 1 2 2v2"/></svg>') !important;
+
+  /* Download: Download */
+  --toolbarButton-download-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>') !important;
+
+  /* Bookmark: Bookmark */
+  --toolbarButton-bookmark-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>') !important;
+
+  /* Current Outline Item: Target */
+  --toolbarButton-currentOutlineItem-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>') !important;
+
+  /* Search: Search */
+  --toolbarButton-search-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>') !important;
+
+  /* Menu Arrow: Chevron Right */
+  --toolbarButton-menuArrow-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>') !important;
+
+  /* Editor Tools */
+  /* Free Text: Type */
+  --toolbarButton-editorFreeText-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></svg>') !important;
+
+  /* Highlight: Highlighter */
+  --toolbarButton-editorHighlight-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 2-9 9l-3-3 9-9Z"/><path d="m15 7 3 3"/></svg>') !important;
+
+  /* Ink: Pen Tool */
+  --toolbarButton-editorInk-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>') !important;
+
+  /* Stamp: Image */
+  --toolbarButton-editorStamp-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>') !important;
 }
 
-/* Typography */
+/* Base Typography */
 body,
 button,
 input,
 select,
 textarea {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-family: 'Outfit', sans-serif !important;
+  color: var(--text-primary) !important;
 }
 
-/* --- Theme Appliers (Colors Only) --- */
+/* --- Toolbar Styling --- */
+.toolbar {
+  background: var(--surface-color) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 10000;
+  display: flex !important;
+  align-items: center !important;
+}
+
+#toolbarViewer,
+#toolbarViewerRight,
+#toolbarViewerLeft,
+#toolbarViewerMiddle {
+  display: flex !important;
+  align-items: center !important;
+}
 
 /* Toolbar Buttons */
-.toolbarButton:hover {
-  background-color: var(--accent-faint) !important;
-  color: var(--accent) !important;
+/* Toolbar Buttons (Standard) */
+.toolbarButton,
+.dropdownToolbarButton {
+  margin: 0 4px !important;
+  border-radius: 8px !important;
+  color: var(--text-secondary) !important;
+  transition: all 0.2s ease;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 32px !important;
+  width: 32px !important;
 }
 
+/* Fix for "More Tools" Menu (which uses .toolbarButton class incorrectly in this version) */
+#secondaryToolbar .toolbarButton {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 32px !important;
+  justify-content: flex-start !important;
+  /* Left align text */
+  margin: 0 !important;
+  padding: 8px 12px !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
+}
+
+#secondaryToolbar .toolbarButton:hover {
+  border-radius: 0 !important;
+  background-color: var(--surface-hover) !important;
+}
+
+#secondaryToolbar .toolbarButton::before {
+  margin-right: 12px !important;
+  flex-shrink: 0 !important;
+}
+
+
+
+/* Hide the decorative separate lines if they look bad, or style them */
+.horizontalToolbarSeparator {
+  display: block !important;
+  height: 1px !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  margin: 4px 0 !important;
+  width: 100% !important;
+}
+
+/* Icons */
+.toolbarButton::before,
+.secondaryToolbarButton::before {
+  opacity: 0.8;
+  /* Default PDF.js masking behavior preserved */
+}
+
+/* Hover States */
+.toolbarButton:hover,
+.secondaryToolbarButton:hover,
+.dropdownToolbarButton:hover {
+  background-color: var(--surface-hover) !important;
+  color: var(--text-primary) !important;
+  transform: translateY(-1px);
+}
+
+.toolbarButton:hover::before,
+.secondaryToolbarButton:hover::before {
+  background-color: var(--primary-color) !important;
+  opacity: 1;
+}
+
+/* Toggled / Active State */
 .toolbarButton.toggled,
-.toolbarButton:active {
-  background-color: var(--accent-strong) !important;
-  color: var(--accent) !important;
+.splitToolbarButton.toggled>.toolbarButton.toggled {
+  background: rgba(255, 94, 98, 0.15) !important;
+  color: var(--primary-color) !important;
+  box-shadow: 0 0 10px var(--primary-glow);
 }
 
-/* Sidebar Thumbnails */
+.toolbarButton.toggled::before {
+  background-color: var(--primary-color) !important;
+}
+
+/* --- Sidebar --- */
+#sidebarContainer {
+  background-color: var(--surface-color) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#toolbarSidebar {
+  background-color: var(--surface-color) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: none !important;
+}
+
+.thumbnail {
+  border: 2px solid transparent !important;
+  border-radius: 8px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.thumbnail:hover {
+  opacity: 1;
+}
+
 .thumbnail.selected {
-  border-color: var(--accent) !important;
+  border-color: var(--primary-color) !important;
+  opacity: 1;
+  box-shadow: 0 0 15px var(--primary-glow) !important;
 }
 
-.thumbnail.selected>.thumbnailSelectionRing {
-  background: var(--accent) !important;
+/* --- Viewer Area --- */
+#viewerContainer {
+  /* Subtle radial gradient background like homepage */
+  background-color: var(--bg-color) !important;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255, 94, 98, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(255, 153, 102, 0.03) 0%, transparent 40%) !important;
 }
 
-/* Inputs */
+.page {
+  border: 9px solid transparent !important;
+  /* Restore border geometry for correct coordinates */
+  border-image: none !important;
+  border-radius: 8px !important;
+  background-clip: content-box !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  margin-bottom: 25px !important;
+}
+
+/* Fix Pen Tool Offset by shifting the layer down */
+.annotationEditorLayer {
+  transform: translateY(-15px) !important;
+}
+
+/* --- Loading Bar --- */
+#loadingBar {
+  height: 3px !important;
+  border: none !important;
+  background-color: var(--surface-hover) !important;
+}
+
+#loadingBar .progress {
+  background: var(--primary-gradient) !important;
+  box-shadow: 0 0 10px var(--primary-color);
+}
+
+/* --- Find Bar --- */
+#findbar {
+  background-color: rgba(26, 26, 26, 0.95) !important;
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px;
+  color: var(--text-primary) !important;
+  top: 60px !important;
+}
+
 .toolbarField {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  border-color: var(--border) !important;
-  color: var(--text-main) !important;
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--text-primary) !important;
+  border-radius: 6px !important;
 }
 
 .toolbarField:focus {
-  border-color: var(--accent) !important;
-  outline: none;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px var(--primary-glow);
 }
 
-/* Find Bar */
-#findbar {
-  background-color: var(--bg-panel) !important;
-  border-color: var(--border) !important;
-  color: var(--text-main) !important;
-}
-
-/* --- Added Tools Enhancements --- */
-
-/* Cursor Tools Group */
-#cursorToolButtons {
-  display: flex;
-  align-items: center;
-  margin: 0 4px;
-}
-
-/* Find Bar */
-#findbar {
-  background-color: var(--bg-panel) !important;
-  border-color: var(--border) !important;
-  color: var(--text-main) !important;
-}
-
-/* Download/Save Button Icon - Folder/Box with Down Arrow */
-#downloadButton::before,
-#secondaryDownload::before {
-  -webkit-mask-image: url(images/toolbarButton-download.svg) !important;
-  mask-image: url(images/toolbarButton-download.svg) !important;
-}
-
-/* Home Button Icon Style */
+/* --- Home Button Customization --- */
+/* --- Home Button Customization --- */
 #homeButton {
   display: flex !important;
   align-items: center;
@@ -112,36 +313,300 @@ textarea {
 }
 
 #homeButton::before {
-  display: none !important;
-  content: none !important;
+  display: inline-block !important;
+  content: "" !important;
+  -webkit-mask-image: var(--toolbarButton-home-icon) !important;
+  mask-image: var(--toolbarButton-home-icon) !important;
+  /* background-color removed to inherit standard toolbar button color */
 }
 
 #homeButton svg {
-  width: 20px;
-  height: 20px;
-  stroke: var(--text-main);
-  stroke-width: 2px;
-  transition: stroke 0.2s ease;
+  display: none !important;
 }
 
-#homeButton:hover svg {
-  stroke: var(--accent);
+#homeButton:hover::before {
+  background-color: var(--primary-color) !important;
 }
 
-/* Secondary Toolbar */
-
-/* Secondary Toolbar */
-#secondaryToolbar {
-  background-color: var(--bg-panel) !important;
-  border-color: var(--border) !important;
+/* --- Scrollbars --- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background-color: var(--bg-color);
 }
 
-.secondaryToolbarButton:hover {
-  background-color: var(--accent-faint) !important;
-  color: var(--accent) !important;
+::-webkit-scrollbar-track {
+  background-color: var(--bg-color);
 }
 
-/* Loading Bar */
-#loadingBar {
-  background-color: var(--accent) !important;
+::-webkit-scrollbar-thumb {
+  background-color: #333;
+  border-radius: 5px;
+  border: 2px solid var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary-color);
+}
+
+/* Dialogs / Overlays */
+.dialog {
+  background-color: var(--surface-color) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+  color: var(--text-primary) !important;
+}
+
+/* --- Editor Params Toolbar (Advanced Options) --- */
+.editorParamsToolbar {
+  background-color: rgba(26, 26, 26, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+  padding: 8px 12px !important;
+  color: var(--text-primary) !important;
+}
+
+/* Remove default caret/arrow if present */
+.editorParamsToolbar::before,
+.editorParamsToolbar::after {
+  display: none !important;
+}
+
+/* Sliders */
+.editorParamsToolbar input[type="range"] {
+  accent-color: var(--primary-color) !important;
+  height: 4px !important;
+  border-radius: 2px !important;
+}
+
+/* Color Pickers */
+.editorParamsColor {
+  border: 2px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 50% !important;
+  width: 24px !important;
+  height: 24px !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.editorParamsColor:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px var(--primary-glow);
+  border-color: var(--primary-color) !important;
+}
+
+/* Buttons inside params toolbar */
+.editorParamsToolbar .editorParamsLabel {
+  color: var(--text-secondary) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+/* --- More Tools Menu (Secondary Toolbar) --- */
+.doorHangerRight {
+  background-color: rgba(26, 26, 26, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+  padding: 6px !important;
+  /* Compact padding */
+  color: var(--text-primary) !important;
+
+  /* Override Default Positioning (Center Aligned) */
+  top: 50px !important;
+  right: auto !important;
+  left: 50% !important;
+  width: 260px !important;
+  /* Slightly narrower */
+
+  /* Animation Base State (Visible) */
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateX(-50%) translateY(0) scale(1) !important;
+  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.2, 0, 0.2, 1), visibility 0.2s !important;
+  transform-origin: top center !important;
+}
+
+/* Animation Hidden State */
+.doorHangerRight.hidden {
+  display: block !important;
+  /* Override PDF.js display:none */
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateX(-50%) translateY(-10px) scale(0.95) !important;
+  pointer-events: none !important;
+}
+
+/* Remove the triangle pointer */
+.doorHangerRight::before,
+.doorHangerRight::after {
+  display: none !important;
+}
+
+/* --- Tool Menus Universal Styling (Secondary, Zoom, Stamp, etc.) --- */
+.doorHangerRight .menuContainer .toolbarButton {
+  width: 100% !important;
+  text-align: left !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  margin-bottom: 2px !important;
+  height: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  /* Ensure left alignment */
+  gap: 10px !important;
+  background-color: transparent !important;
+  transition: background-color 0.2s ease;
+  min-height: 32px !important;
+  color: var(--text-primary) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.doorHangerRight .menuContainer .toolbarButton:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.doorHangerRight .menuContainer .toolbarButton.toggled {
+  background-color: rgba(255, 107, 0, 0.2) !important;
+  color: var(--primary-color) !important;
+}
+
+.doorHangerRight .menuContainer .toolbarButton span {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: inherit !important;
+}
+
+.doorHangerRight .menuContainer .toolbarButton::before {
+  background-color: var(--text-secondary) !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.doorHangerRight .menuContainer .toolbarButton:hover::before,
+.doorHangerRight .menuContainer .toolbarButton.toggled::before {
+  background-color: var(--primary-color) !important;
+}
+
+/* Specific button overrides matched universally above */
+
+/* Remove ghost icons from zoom menu AND the main zoom button */
+#customZoomMenu .toolbarButton::before,
+#customZoomButton::before {
+  display: none !important;
+}
+
+#customZoomMenu .toolbarButton {
+  justify-content: center !important;
+  /* Center zoom percentage text */
+  padding: 6px 12px !important;
+}
+
+/* --- Custom Zoom UI --- */
+#toolbarViewerMiddle {
+  overflow: visible !important;
+  /* Allow wider zoom button */
+}
+
+#scaleSelectContainer {
+  display: flex !important;
+  align-items: center !important;
+  position: relative !important;
+  background: none !important;
+  /* Remove native box */
+  border: none !important;
+  /* Remove native box */
+  width: auto !important;
+  /* Allow expansion */
+  overflow: visible !important;
+}
+
+#customZoomButton {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 0 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  height: 32px !important;
+  width: auto !important;
+  min-width: 140px !important;
+  /* Slightly wider to be safe */
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+#customZoomButton:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: var(--primary-color) !important;
+}
+
+#customZoomValue {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  display: block !important;
+  /* Force visible */
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  line-height: normal !important;
+}
+
+#customZoomButton .chevron {
+  opacity: 0.6 !important;
+  color: var(--text-secondary) !important;
+  transition: transform 0.2s ease !important;
+}
+
+#customZoomButton:hover .chevron {
+  opacity: 1 !important;
+  color: var(--primary-color) !important;
+}
+
+/* Separators (Universal) */
+.doorHangerRight .horizontalToolbarSeparator,
+#secondaryToolbar .horizontalToolbarSeparator,
+#customZoomMenu .horizontalToolbarSeparator {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  margin: 6px 0 !important;
+  height: 1px !important;
+  width: 100% !important;
+  display: block !important;
+}
+
+#customZoomMenu {
+  top: 100% !important;
+  margin-top: 430px !important;
+  transform: translateX(-170px) !important;
+  /* Move it down further */
+  width: 180px !important;
+  padding: 6px !important;
+}
+
+#customZoomMenu:not(.hidden) {
+  transform: translateX(-170px) translateY(5px) !important;
+  /* Added final transformation nudge */
+}
+
+/* --- UI Cleanup: Remove Loading Bar and Separators --- */
+#loadingBar,
+.splitToolbarButtonSeparator,
+.verticalToolbarSeparator {
+  display: none !important;
+}
+
+/* Override dropdownToolbarButton::after (original native caret) */
+.dropdownToolbarButton::after {
+  display: none !important;
 }

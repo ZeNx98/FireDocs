@@ -1,21 +1,11 @@
 // Prevents additional console window on Windows in release
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use once_cell::sync::Lazy;
-use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::{Arc, Mutex};
-use std::io::SeekFrom;
-use tokio::io::{AsyncReadExt, AsyncSeekExt};
-use warp::Filter;
-use warp::http::Response;
 
-// Global registry to map tokens to file paths securely
-static FILE_REGISTRY: Lazy<Arc<Mutex<HashMap<String, PathBuf>>>> =
-    Lazy::new(|| Arc::new(Mutex::new(HashMap::new())));
-
-// Global variable to store the server port
-static SERVER_PORT: Lazy<Arc<Mutex<u16>>> = Lazy::new(|| Arc::new(Mutex::new(0)));
+// Global registry and server port removed
+// static FILE_REGISTRY...
+// static SERVER_PORT...
 
 #[derive(serde::Serialize)]
 struct FileMetadata {
@@ -23,11 +13,7 @@ struct FileMetadata {
     size: u64,
 }
 
-#[derive(serde::Serialize)]
-struct StreamResponse {
-    token: String,
-    url: String,
-}
+// Struct StreamResponse removed
 
 #[tauri::command]
 async fn select_pdf() -> Option<String> {
@@ -58,149 +44,40 @@ fn get_file_metadata(path: String) -> Result<FileMetadata, String> {
 }
 
 #[tauri::command]
-fn read_file_chunk(path: String, offset: u64, length: u64) -> Result<Vec<u8>, String> {
+fn read_file_chunk(path: String, offset: u64, length: u64) -> Result<String, String> {
     use std::fs::File;
     use std::io::{Read, Seek};
+    use base64::{Engine as _, engine::general_purpose};
+    
+    // Safety cap: Limit chunk size to 5MB to prevent memory issues
+    let safe_length = std::cmp::min(length, 5 * 1024 * 1024);
     
     let mut file = File::open(path).map_err(|e| e.to_string())?;
     file.seek(std::io::SeekFrom::Start(offset)).map_err(|e| e.to_string())?;
     
-    let mut buffer = vec![0; length as usize];
+    let mut buffer = vec![0; safe_length as usize];
     let n = file.read(&mut buffer).map_err(|e| e.to_string())?;
     
     buffer.truncate(n);
-    Ok(buffer)
-}
-
-#[tauri::command]
-fn prepare_pdf_stream(path: String) -> Result<StreamResponse, String> {
-    let path_buf = PathBuf::from(&path);
-    if !path_buf.exists() {
-        return Err("File not found".to_string());
-    }
-
-    let token = uuid::Uuid::new_v4().to_string();
     
-    // Register the file
-    FILE_REGISTRY
-        .lock()
-        .map_err(|_| "Failed to lock registry")?
-        .insert(token.clone(), path_buf);
-
-    let port = *SERVER_PORT.lock().unwrap();
-    let url = format!("http://localhost:{}/pdf/{}", port, token);
-
-    Ok(StreamResponse { token, url })
+    // Return base64 string which is safer for Tauri v1 IPC
+    let b64 = general_purpose::STANDARD.encode(&buffer);
+    Ok(b64)
 }
 
-// Function to serve the file content
-async fn serve_file_handler(token: String, range_header: Option<String>) -> Result<impl warp::Reply, warp::Rejection> {
-    let path_opt = FILE_REGISTRY
-        .lock()
-        .ok()
-        .and_then(|registry| registry.get(&token).cloned());
+// prepare_pdf_stream removed
 
-    let path = match path_opt {
-        Some(p) => p,
-        None => return Err(warp::reject::not_found()),
-    };
-
-    let mut file = match tokio::fs::File::open(&path).await {
-        Ok(f) => f,
-        Err(_) => return Err(warp::reject::not_found()),
-    };
-
-    let metadata = match file.metadata().await {
-        Ok(m) => m,
-        Err(_) => return Err(warp::reject::not_found()),
-    };
-    let len = metadata.len();
-
-    let mut start = 0;
-    let mut end = len - 1;
-    let mut status_code = 200;
-
-    if let Some(range_val) = range_header {
-        if range_val.starts_with("bytes=") {
-            let ranges: Vec<&str> = range_val["bytes=".len()..].split('-').collect();
-            if ranges.len() == 2 {
-                let start_str = ranges[0];
-                let end_str = ranges[1];
-
-                if let Ok(s) = start_str.parse::<u64>() {
-                    start = s;
-                }
-                if let Ok(e) = end_str.parse::<u64>() {
-                    end = e;
-                }
-                
-                if end < start { end = len - 1; }
-                if end >= len { end = len - 1; }
-                
-                status_code = 206;
-            }
-        }
-    }
-
-    if start >= len {
-        return Ok(Response::builder()
-            .status(416)
-            .header("Content-Range", format!("bytes */{}", len))
-            .body(vec![])
-            .unwrap());
-    }
-
-    let chunk_len = end - start + 1;
-    
-    if let Err(_) = file.seek(SeekFrom::Start(start)).await {
-        return Err(warp::reject::not_found()); // Simple error mapping
-    }
-
-    let mut buffer = vec![0; chunk_len as usize];
-    if let Err(_) = file.read_exact(&mut buffer).await {
-         // Best effort
-    }
-
-    let mut builder = Response::builder()
-        .status(status_code)
-        .header("Access-Control-Allow-Origin", "*") // Important for CORS
-        .header("Accept-Ranges", "bytes")
-        .header("Content-Length", chunk_len.to_string())
-        .header("Content-Type", "application/pdf");
-
-    if status_code == 206 {
-        builder = builder.header("Content-Range", format!("bytes {}-{}/{}", start, end, len));
-    }
-
-    Ok(builder.body(buffer).unwrap()) 
-}
+// serve_file_handler removed
 
 fn main() {
-    tauri::async_runtime::spawn(async move {
-        let pdf_route = warp::path("pdf")
-            .and(warp::path::param::<String>())
-            .and(warp::header::optional::<String>("Range"))
-            .and_then(serve_file_handler)
-            .with(warp::cors().allow_any_origin()); // CORS also on options/wrapper
-
-        // Use bind_ephemeral to let OS pick port
-        let (addr, server) = warp::serve(pdf_route)
-             .bind_ephemeral(([127, 0, 0, 1], 0));
-
-        println!("Server running on port: {}", addr.port());
-        
-        *SERVER_PORT.lock().unwrap() = addr.port();
-        
-        server.await;
-    });
+    // warp server spawn removed
 
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             select_pdf, 
             get_file_metadata, 
             read_file_chunk,
-            read_file_chunk,
-            prepare_pdf_stream,
+            // prepare_pdf_stream, (removed)
             save_pdf
         ])
         .run(tauri::generate_context!())
