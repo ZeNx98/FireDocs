@@ -36,6 +36,13 @@
             "deb": {
                 "depends": []
             },
+            "rpm": {
+                "depends": [
+                    "webkit2gtk4.1",
+                    "gtk3",
+                    "libayatana-appindicator"
+                ]
+            },
             "externalBin": [],
             "icon": [
                 "icons/32x32.png",
