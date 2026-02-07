@@ -3,35 +3,31 @@ import { PDFDataRangeTransport } from '../build/pdf.mjs';
 // FireDoc Custom PDF.js Viewer Enhancements
 // Additional functionality and UX improvements
 
-// Define Custom Transport for efficient chunked loading
 class TauriRangeTransport extends PDFDataRangeTransport {
   constructor(path, length, initialData) {
     super(length, initialData);
     this.path = path;
-    console.log(`🚚 TauriRangeTransport initialized for ${path} (${length} bytes)`);
+    console.log(`TauriRangeTransport initialized for ${path} (${length} bytes)`);
   }
 
   requestDataRange(begin, end) {
     const length = end - begin;
-    // console.log(`REQUEST CHUNK: ${begin}-${end}`);
     window.__TAURI__.invoke('read_file_chunk', {
       path: this.path,
       offset: begin,
       length: length
     })
       .then(base64Data => {
-        // Decode base64
         const binaryString = atob(base64Data);
         const len = binaryString.length;
         const bytes = new Uint8Array(len);
         for (let i = 0; i < len; i++) {
           bytes[i] = binaryString.charCodeAt(i);
         }
-        // console.log(`RECEIVED CHUNK: ${begin}-${end} (${bytes.length} bytes)`);
         this.onDataRange(begin, bytes);
       })
       .catch(err => {
-        console.error('❌ Chunk read error:', err);
+        console.error('Chunk read error:', err);
       });
   }
 }
@@ -39,9 +35,8 @@ class TauriRangeTransport extends PDFDataRangeTransport {
 (function () {
   'use strict';
 
-  // Wait for PDF.js to fully load
   const initEnhancements = function () {
-    console.log('✨ FireDoc Enhancements initializing...');
+    console.log('FireDoc Enhancements initializing...');
 
     // Add Home button functionality
     const homeButton = document.getElementById('homeButton');
@@ -56,7 +51,7 @@ class TauriRangeTransport extends PDFDataRangeTransport {
           window.location.href = '/homepage.html';
         }
       });
-      console.log('🏠 Home button initialized');
+      console.log('Home button initialized');
     }
 
     // --- Custom File Loading via Tauri FS (Chunked) ---
@@ -64,15 +59,14 @@ class TauriRangeTransport extends PDFDataRangeTransport {
     const pdfPath = urlParams.get('pdfPath');
 
     if (pdfPath && window.__TAURI__) {
-      console.log('📂 Detected pdfPath, attempting custom chunked load:', pdfPath);
+      console.log('Detected pdfPath, attempting custom chunked load:', pdfPath);
 
       const invoke = window.__TAURI__.invoke;
       const INITIAL_CHUNK_SIZE = 65536; // 64KB start
 
-      // 1. Get Metadata (size)
       invoke('get_file_metadata', { path: pdfPath })
         .then(metadata => {
-          console.log('✅ Metadata received:', metadata);
+          console.log('Metadata received:', metadata);
           const totalSize = metadata.size;
 
           // 2. Initialize Transport with empty data to force standard loading
@@ -84,7 +78,7 @@ class TauriRangeTransport extends PDFDataRangeTransport {
             attempts++;
             if (window.PDFViewerApplication && window.PDFViewerApplication.open) {
               clearInterval(checkApp);
-              console.log('🚀 PDFViewerApplication ready. Opening PDF with Transport...');
+              console.log('PDFViewerApplication ready. Opening PDF with Transport...');
 
               const openPdf = () => window.PDFViewerApplication.open({ range: transport });
 
@@ -109,7 +103,6 @@ class TauriRangeTransport extends PDFDataRangeTransport {
 
     // Enhanced keyboard shortcuts
     document.addEventListener('keydown', function (e) {
-      // Zoom shortcuts removed to use native browser/PDF.js behavior (User request)
 
       // Home key: Go to first page
       if (e.key === 'Home' && !e.shiftKey && !e.ctrlKey) {
@@ -240,11 +233,7 @@ class TauriRangeTransport extends PDFDataRangeTransport {
       document.head.appendChild(style);
     }
 
-    // Double-click on page to toggle fit modes
     const viewerContainer = document.getElementById('viewerContainer');
-    // if (viewerContainer) {
-    //   // Double-click to zoom disabled (User request)
-    // }
 
     // Add current page highlight in sidebar thumbnails
     const thumbnailView = document.getElementById('thumbnailView');
@@ -277,7 +266,7 @@ class TauriRangeTransport extends PDFDataRangeTransport {
         const numPages = parseInt(numPagesElement.textContent);
         if (numPages > 0 && totalPages !== numPages) {
           totalPages = numPages;
-          console.log(`📄 FireDoc: Loaded PDF with ${totalPages} pages`);
+          console.log(`FireDoc: Loaded PDF with ${totalPages} pages`);
 
           // Show notification for large PDFs
           if (totalPages > 100) {
@@ -347,7 +336,7 @@ class TauriRangeTransport extends PDFDataRangeTransport {
       setTimeout(() => {
         const title = document.title;
         if (title && title !== 'PDF.js viewer') {
-          console.log(`📄 FireDoc: "${title}"`);
+          console.log(`FireDoc: "${title}"`);
         }
       }, 500);
     });
@@ -360,7 +349,6 @@ class TauriRangeTransport extends PDFDataRangeTransport {
       });
     }
 
-    // Enhanced download button (Native Save As) - Moved to Secondary Toolbar
     const secondaryDownload = document.getElementById('secondaryDownload');
     if (secondaryDownload) {
       secondaryDownload.addEventListener('click', async function (e) {
@@ -391,8 +379,8 @@ class TauriRangeTransport extends PDFDataRangeTransport {
             if (savePath) {
               // 3. Write File
               await window.__TAURI__.fs.writeBinaryFile(savePath, data);
-              showNotification('File saved successfully! 💾');
-              console.log('✅ File saved to:', savePath);
+              showNotification('File saved successfully!');
+              console.log('File saved to:', savePath);
             } else {
               showNotification('Save cancelled.');
             }
@@ -463,11 +451,9 @@ class TauriRangeTransport extends PDFDataRangeTransport {
         }
       });
 
-      // Always prevent context menu globally (User request)
       document.addEventListener('contextmenu', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        hasDragged = false; // Reset to be safe
         return false;
       });
     }
@@ -484,8 +470,6 @@ class TauriRangeTransport extends PDFDataRangeTransport {
       }
     };
 
-    // --- Custom Wheel Zoom (Tiny Steps) ---
-    // User Request: "max 20% by a step an min 1%"
     const addCustomWheelZoom = () => {
       const viewerContainer = document.getElementById('viewerContainer');
       if (!viewerContainer) return;
@@ -538,7 +522,7 @@ class TauriRangeTransport extends PDFDataRangeTransport {
         capture: true
       }); // Capture phase to intercept before PDF.js
 
-      console.log('🔍 Custom tiny-step zoom enabled (Ctrl+Wheel)');
+      console.log('Custom tiny-step zoom enabled (Ctrl+Wheel)');
     };
 
     // --- Intelligent Menu Positioning (Overflow Prevention) ---
@@ -587,7 +571,7 @@ class TauriRangeTransport extends PDFDataRangeTransport {
         document.querySelectorAll('.doorHangerRight:not(.hidden), .editorParamsToolbar:not(.hidden)').forEach(adjustMenuPosition);
       });
 
-      console.log('🧠 Intelligent menus initialized');
+      console.log('Intelligent menus initialized');
     };
 
     setupIntelligentMenus();
@@ -673,13 +657,11 @@ class TauriRangeTransport extends PDFDataRangeTransport {
         }
       });
 
-      console.log('🔍 Custom zoom UI initialized');
+      console.log('Custom zoom UI initialized');
     };
 
     setupCustomZoom();
 
-    // --- Restrict Ink Selection (User Request) ---
-    // Only allow selecting Ink/Pencil annotations when using the Pointer tool (AnnotationEditorType.NONE and CursorTool.SELECT)
     const setupInkRestriction = () => {
       const viewerContainer = document.getElementById('viewerContainer');
       if (!viewerContainer) return;
@@ -723,7 +705,7 @@ class TauriRangeTransport extends PDFDataRangeTransport {
           }
           updateInk();
 
-          console.log('🚫 Ink selection restriction initialized');
+          console.log('Ink selection restriction initialized');
         }
       }, 100);
     };
@@ -733,16 +715,16 @@ class TauriRangeTransport extends PDFDataRangeTransport {
     // Initialize custom zoom
     addCustomWheelZoom();
 
-    console.log('🔥 FireDoc: Enhanced PDF viewer loaded successfully');
-    console.log('📚 Custom keyboard shortcuts:');
-    console.log('  • Ctrl/Cmd + 0: Fit to width');
-    console.log('  • Ctrl/Cmd + 1: Actual size');
-    console.log('  • Ctrl/Cmd + 2: Fit to page');
-    console.log('  • Home: First page');
-    console.log('  • End: Last page');
-    console.log('  • F: Toggle search');
-    console.log('  • Double-click: Toggle fit modes');
-    console.log('  • (Standard PDF.js controls also available)');
+    console.log('FireDoc: Enhanced PDF viewer loaded successfully');
+    console.log('Custom keyboard shortcuts:');
+    console.log('  - Ctrl/Cmd + 0: Fit to width');
+    console.log('  - Ctrl/Cmd + 1: Actual size');
+    console.log('  - Ctrl/Cmd + 2: Fit to page');
+    console.log('  - Home: First page');
+    console.log('  - End: Last page');
+    console.log('  - F: Toggle search');
+    console.log('  - Double-click: Toggle fit modes');
+    console.log('  - (Standard PDF.js controls also available)');
   }; // End of initEnhancements
 
   // Check document readiness

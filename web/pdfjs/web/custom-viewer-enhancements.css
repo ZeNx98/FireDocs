@@ -157,13 +157,11 @@ textarea {
   width: 32px !important;
 }
 
-/* Fix for "More Tools" Menu (which uses .toolbarButton class incorrectly in this version) */
 #secondaryToolbar .toolbarButton {
   width: 100% !important;
   height: auto !important;
   min-height: 32px !important;
   justify-content: flex-start !important;
-  /* Left align text */
   margin: 0 !important;
   padding: 8px 12px !important;
   border-radius: 0 !important;
@@ -265,7 +263,6 @@ textarea {
 
 .page {
   border: 9px solid transparent !important;
-  /* Restore border geometry for correct coordinates */
   border-image: none !important;
   border-radius: 8px !important;
   background-clip: content-box !important;
@@ -325,7 +322,6 @@ textarea {
   content: "" !important;
   -webkit-mask-image: var(--toolbarButton-home-icon) !important;
   mask-image: var(--toolbarButton-home-icon) !important;
-  /* background-color removed to inherit standard toolbar button color */
 }
 
 #homeButton svg {
@@ -428,9 +424,7 @@ textarea {
   right: auto !important;
   left: 50% !important;
   width: 260px !important;
-  /* Slightly narrower */
 
-  /* Animation Base State (Visible) */
   display: block !important;
   opacity: 1 !important;
   visibility: visible !important;
@@ -442,7 +436,6 @@ textarea {
 /* Animation Hidden State */
 .doorHangerRight.hidden {
   display: block !important;
-  /* Override PDF.js display:none */
   opacity: 0 !important;
   visibility: hidden !important;
   transform: translateX(-50%) translateY(-10px) scale(0.95) !important;
@@ -466,7 +459,6 @@ textarea {
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  /* Ensure left alignment */
   gap: 10px !important;
   background-color: transparent !important;
   transition: background-color 0.2s ease;
@@ -633,9 +625,6 @@ textarea {
 }
 
 /* --- Restrict Ink Selection --- */
-/* User Request: Ink/Pencil layers should only be selectable when using the Pointer tool */
-/* The .disable-ink-selection class is added by custom-viewer-enhancements.js when an editor tool is active */
-/* IMPORTANT: We must ALLOW pointer-events on the ACTIVE editor (.editing) so drawing still works! */
 .disable-ink-selection .inkEditor:not(.editing) {
   pointer-events: none !important;
   cursor: default !important;

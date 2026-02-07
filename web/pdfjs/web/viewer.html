@@ -34,9 +34,7 @@ See https://github.com/adobe-type-tools/cmap-resources
   <script src="../build/pdf.mjs" type="module"></script>
 
   <link rel="stylesheet" href="viewer.css">
-  <!-- FireDoc custom viewer enhancements -->
   <link rel="stylesheet" href="custom-viewer-enhancements.css">
-  <!-- Font to match homepage styling -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap">
   <style>
     :root {
@@ -45,7 +43,6 @@ See https://github.com/adobe-type-tools/cmap-resources
   </style>
 
   <script src="viewer.mjs" type="module"></script>
-  <!-- FireDoc custom viewer enhancements -->
   <script src="custom-viewer-enhancements.js" type="module"></script>
 </head>
 
@@ -243,7 +240,6 @@ See https://github.com/adobe-type-tools/cmap-resources
               </span>
             </div>
             <div id="toolbarViewerRight" class="toolbarHorizontalGroup">
-              <!-- FireDoc: Home button -->
               <button id="homeButton" class="toolbarButton" type="button" tabindex="0" title="Home">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                   stroke-linecap="round" stroke-linejoin="round">
@@ -400,9 +396,6 @@ See https://github.com/adobe-type-tools/cmap-resources
 
               <div id="editorModeSeparator" class="verticalToolbarSeparator"></div>
 
-              <!-- Print and Download moved to secondary menu (User Request) -->
-              <!-- Print and Download moved to secondary menu (User Request) -->
-              <!-- Kept here but hidden to prevent viewer.mjs crash on init -->
               <div class="toolbarHorizontalGroup" style="display: none !important;">
                 <button id="printButton" class="toolbarButton" type="button" tabindex="0"
                   data-l10n-id="pdfjs-print-button">
@@ -430,8 +423,6 @@ See https://github.com/adobe-type-tools/cmap-resources
                       <span data-l10n-id="pdfjs-open-file-button-label"></span>
                     </button>
 
-                    <!-- Unhidden for all views (User Request) -->
-                    <!-- <div class="visibleMediumView"> -->
                     <button id="secondaryPrint" class="toolbarButton labeled" type="button" tabindex="0"
                       data-l10n-id="pdfjs-print-button">
                       <span data-l10n-id="pdfjs-print-button-label"></span>
