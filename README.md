@@ -17,12 +17,10 @@ FireDoc is built for people who want a dedicated space for reading without the c
 - **Lightweight** : Uses Tauri to provide a native app feel with a fraction of the memory usage of a full browser
 - **Native Experience** : No browser tabs, address bars, or distractions.
 - **Modern UI** : Optimized for focus, updated UI and styles.
-- **De-Cluttered Interface** : Removed "trash" features and unneeded buttons from the standard PDF.js for more comfortable reading experience.
+- **De-Cluttered Interface** : Removed trash features and unneeded buttons from the standard PDF.js for more comfortable reading experience.
 - **Smarter Zoom & Rendering** : Improved zoom logic and more stable page rendering.
 - **Better Annotations** : A refined highlighting and drawing experience, including smarter tool selection and restricted ink selection to prevent accidental edits.
 - **Persistent Recents** : Standard PDF.js doesn't remember your files. FireDoc keeps your last 6 documents ready on the homepage.
-- **Native File Handling** : Proper "Save As" dialogs and blazing-fast file opening via Rust.
-
 ---
 
 ### Installation
