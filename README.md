@@ -8,6 +8,11 @@
   <strong>A fast, minimalist PDF viewer for your desktop.</strong>
 </p>
 
+<p align="center">
+  <img src="img/homepage.png" width="400" alt="FireDoc Homepage">
+  <img src="img/viewer.png" width="400" alt="FireDoc Viewer">
+</p>
+
 ---
 
 ### Why FireDoc?
