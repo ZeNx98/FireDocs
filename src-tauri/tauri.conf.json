@@ -8,7 +8,7 @@
     },
     "package": {
         "productName": "firedoc",
-        "version": "3.1.0"
+        "version": "3.2.0"
     },
     "tauri": {
         "allowlist": {
@@ -38,19 +38,14 @@
             },
             "rpm": {
                 "depends": [
-                    "webkit2gtk4.1",
+                    "webkit2gtk3",
                     "gtk3",
                     "libayatana-appindicator"
                 ]
             },
             "externalBin": [],
             "icon": [
-                "icons/32x32.png",
-                "icons/128x128.png",
-                "icons/128x128@2x.png",
-                "icons/icon.png",
-                "icons/icon.ico",
-                "icons/icon.icns"
+                "icons/icon.png"
             ],
             "identifier": "com.znx.firedoc",
             "longDescription": "",
