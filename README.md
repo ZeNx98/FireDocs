@@ -1,104 +1,69 @@
 <p align="center">
-  <img src="icon.png" width="256" height="256" alt="FireDoc Logo">
+  <img src="icon.png" width="160" height="160" alt="FireDoc Logo">
 </p>
 
 <h1 align="center">FireDoc</h1>
 
-**A minimalist, blazing-fast PDF viewer built with Tauri and Mozilla's PDF.js**
-
-## What is FireDoc?
-
-FireDoc is a standalone, lightweight PDF viewer designed for speed and privacy. While browser-based viewers are convenient, they often come with clutter and overhead. FireDoc strips all that away, providing a distraction-free reading experience. Built with **Tauri**, it offers native performance with a tiny footprint, no tracking, and no cloud dependencies.
-
-## 🚀 Features
-
-- **Blazing Fast** — Built with Rust and Tauri for near-instant startup.
-- **Minimalist Interface** — Modern, clean design with an orange/fire aesthetic.
-- **Recent Files** — Quickly jump back into your last 6 documents from the homepage.
-- **Drag & Drop** — Open PDFs instantly by dropping them anywhere.
-- **Annotation Tools** — Highlight, draw, and add text comments (powered by PDF.js).
-- **Privacy First** — Runs 100% locally with no telemetry or external calls.
-- **Cross-Platform** — Native builds for Linux and Windows (macOS support in progress).
-
----
-
-## 📸 Screenshots
-
 <p align="center">
-  <img src="img/screenshot1.png" width="400" alt="FireDoc Homepage">
-  <img src="img/screenshot2.png" width="400" alt="FireDoc Viewer">
-</p>
-
-<p align="center">
-  <em>Left: Homepage with recent files • Right: Interactive PDF viewer interface</em>
+  <strong>A fast, minimalist PDF viewer for your desktop.</strong>
 </p>
 
 ---
 
-## 📦 Installation
+### Why FireDoc?
+FireDoc is built for people who want a dedicated space for reading without the clutter of a web browser. It’s lightweight, privacy-focused, and stays out of your way.
 
-### Pre-built Releases
-Download the latest binaries for your platform:
-**[Download FireDoc from Releases](https://github.com/ZeNx98/FireDoc/releases)**
+#### **Better than a Browser (PDF.js Improvements):**
+- **Lightweight** — Uses Tauri to provide a native app feel with a fraction of the memory usage of a full browser
+- **Native Experience** — No browser tabs, address bars, or distractions.
+- **Modern UI** — Optimized for focus, updated UI and styles.
+- **De-Cluttered Interface** — Removed "trash" features and unneeded buttons from the standard PDF.js for more comfortable reading experience.
+- **Smarter Zoom & Rendering** — Improved zoom logic and more stable page rendering for crisp text at any scale.
+- **Better Annotations** — A refined highlighting and drawing experience, including smarter tool selection and restricted ink selection to prevent accidental edits.
+- **Persistent Recents** — Standard PDF.js doesn't remember your files. FireDoc keeps your last 6 documents ready on the homepage.
+- **Native File Handling** — Proper "Save As" dialogs and blazing-fast file opening via Rust.
 
-- **Linux**: `.deb`, `.AppImage`, and Arch Linux packages.
-- **Windows**: `.msi` and setup executables.
+---
 
-### Arch Linux (AUR)
-If you are on Arch Linux, you can build the package using the provided `PKGBUILD`:
-```sh
-cd pkg
-makepkg -si
+### Installation
+
+#### **Linux (Multiple Options)**
+
+**AppImage (Portable)**
+> [!WARNING]
+> The current AppImage version has a bug and is not loading files. Please use the `.deb` or AUR version for now.
+
+   chmod +x  firedoc_3.1.0_amd64.AppImage 
+   ./firedoc_3.1.0_amd64.AppImage
+   ```
+
+**Debian / Ubuntu (.deb)**
+# Download the .deb file and run:
+sudo apt update
+sudo apt install ./firedoc_amd64.deb
 ```
 
-### From Source
-Requires **Rust** and **Node.js**:
-```sh
-# Clone the repository
-git clone https://github.com/ZeNx98/FireDoc.git
-cd FireDoc
-
-# Install dependencies
-npm install
-
-# Run in development mode
-npm run tauri dev
-
-# Build production bundle
-npm run tauri build
+**Fedora / Red Hat (.rpm)**
+```bash
+# Download the .rpm file and run:
+sudo dnf install ./firedoc.rpm
 ```
 
----
+**Arch Linux (AUR)**
+Install FireDoc easily using an AUR helper like `yay`:
+```bash
+yay -S firedoc
+```
 
-## 📖 How to Use
+#### **Windows**
+Download the `.msi` or `.exe` installer from the **[latest release](https://github.com/ZeNx98/FireDoc/releases)**. Run the setup and follow the prompts.
 
-1. **Open a PDF**:
-   - Use the **Browse Files** button on the homepage.
-   - **Drag and drop** a PDF file onto the app window.
-   - Select a file from the **Continue Reading** list.
-2. **Reading & Editing**:
-   - **Scroll/Zoom**: Use standard mouse gestures or toolbar controls.
-   - **Annotations**: Use the Pencil, Highlight, or Text tools in the toolbar.
-   - **Sidebars**: Toggle thumbnails or document outlines for easy navigation.
-3. **Save**: Click the download/save icon to export your annotated PDF.
+#### **macOS**
+Download the `.dmg` from the releases page, drag the **FireDoc** icon into your **Applications** folder, and launch it from your Launchpad.
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Whether it's fixing a bug, adding a feature, or improving documentation, feel free to open a PR.
-
-- **Translations**: Help us reach more languages!
-- **UI/UX**: Help refine the "Fire" aesthetic.
-- **Testing**: Report issues or request features via GitHub Issues.
-
----
-
-## 📜 License
-
-This project is licensed under the **MIT License**. See [LICENSE](./LICENSE) for details.
-FireDoc uses **Mozilla PDF.js** (Apache 2.0).
-
----
+### Contributing
+Spot a bug or have an idea? Feel free to open an issue or drop a pull request. We're always looking to make FireDoc better.
 
 **Made with ❤️ by [ZeNx98](https://github.com/ZeNx98)**
