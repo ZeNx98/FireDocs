@@ -5,10 +5,16 @@ const fs = require('fs');
 let mainWindow;
 
 function createWindow() {
+    const iconPath = process.platform === 'win32'
+        ? path.join(__dirname, '../build/icons/icon.ico')
+        : path.join(__dirname, '../build/icons/icon.png');
+
     mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
-        frame: false, // Borderless mode
+        icon: iconPath,
+        frame: false, // Borderless mode enabled for custom titlebar
+        autoHideMenuBar: true,
         webPreferences: {
             preload: path.join(__dirname, 'preload.cjs'),
             contextIsolation: true,

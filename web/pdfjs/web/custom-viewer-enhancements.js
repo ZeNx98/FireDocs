@@ -40,7 +40,44 @@ class ElectronRangeTransport extends PDFDataRangeTransport {
   const initEnhancements = function () {
     console.log('FireDocs Enhancements initializing...');
 
+    const applyDecorations = (show) => {
+      if (show) {
+        document.documentElement.classList.remove('hide-decorations-active');
+      } else {
+        document.documentElement.classList.add('hide-decorations-active');
+      }
+      if (window.electron) {
+        window.electron.invoke('set_titlebar_visible', show);
+      }
+      updateTitlebarStyles();
+    };
+
+    function updateTitlebarStyles() {
+      const titlebar = document.getElementById('customTitlebar');
+      if (!titlebar) return;
+
+      const size = localStorage.getItem('fireDocs_tbSize') || 'compact';
+      const style = localStorage.getItem('fireDocs_tbStyle') || 'modern';
+
+      titlebar.classList.remove('size-compact', 'size-normal', 'size-large');
+      titlebar.classList.remove('style-modern', 'style-mac', 'style-adwaita', 'style-win10', 'style-win11', 'style-minimal');
+
+      titlebar.classList.add(`size-${size}`);
+      titlebar.classList.add(`style-${style}`);
+    }
+
     const hideDecorations = localStorage.getItem('fireDocs_hideDecorations') === 'true';
+    applyDecorations(!hideDecorations);
+    updateTitlebarStyles();
+
+    // Fade In on Load
+    const overlay = document.getElementById('transition-overlay');
+    if (overlay) {
+      // Small delay to ensure render
+      setTimeout(() => {
+        overlay.classList.add('fade-out');
+      }, 50);
+    }
 
     // Notification system
     function showNotification(message, duration = 3000) {
@@ -156,56 +193,89 @@ class ElectronRangeTransport extends PDFDataRangeTransport {
 
     window.addEventListener('beforeunload', beforeUnloadHandler);
 
+    const triggerNavigation = () => {
+      const overlay = document.getElementById('transition-overlay');
+      if (overlay) {
+        overlay.classList.remove('fade-out');
+      }
+      setTimeout(() => {
+        if (window.electron) {
+          window.electron.invoke('navigate_to_home');
+        } else {
+          window.location.href = '../../homepage.html';
+        }
+      }, 300);
+    };
+
+    // Custom Unsaved Changes Dialog Helper
+    const showUnsavedChangesDialog = () => {
+      return new Promise((resolve) => {
+        const dialog = document.getElementById('unsavedChangesDialog');
+        const saveBtn = document.getElementById('unsavedChangesSave');
+        const discardBtn = document.getElementById('unsavedChangesDiscard');
+        const cancelBtn = document.getElementById('unsavedChangesCancel');
+
+        if (!dialog || !saveBtn || !discardBtn || !cancelBtn) {
+          // Fallback
+          if (confirm('You have unsaved changes. Discard them?')) {
+            resolve('discard');
+          } else {
+            resolve('cancel');
+          }
+          return;
+        }
+
+        const closeDialog = (result) => {
+          dialog.classList.remove('active');
+          // Cleanup listeners
+          saveBtn.onclick = null;
+          discardBtn.onclick = null;
+          cancelBtn.onclick = null;
+          resolve(result);
+        };
+
+        saveBtn.onclick = () => closeDialog('save');
+        discardBtn.onclick = () => closeDialog('discard');
+        cancelBtn.onclick = () => closeDialog('cancel');
+
+        dialog.classList.add('active');
+      });
+    };
+
     const confirmLeave = async () => {
-      // If there are no unsaved changes, we can proceed.
       if (!hasUnsavedChanges()) {
+        if (!isLeaving) {
+          isLeaving = true;
+          window.removeEventListener('beforeunload', beforeUnloadHandler);
+          window.onbeforeunload = null;
+          triggerNavigation();
+        }
         return true;
       }
 
-      if (!window.electron?.invoke) {
-        const confirmed = confirm('You have unsaved changes. Are you sure you want to leave?');
-        if (confirmed) {
-          isLeaving = true;
-          window.removeEventListener('beforeunload', beforeUnloadHandler);
-        }
-        return confirmed;
-      }
+      if (isLeaving) return true;
 
-      const choice = await window.electron.invoke('confirm_discard', {
-        title: 'Unsaved Changes',
-        message: 'You have modified this PDF. Do you want to save your changes?'
-      });
-
-      console.log('FireDocs: confirmLeave result:', choice);
+      const choice = await showUnsavedChangesDialog();
 
       if (choice === 'save') {
         const saved = await performSave();
         if (saved) {
           isLeaving = true;
           window.removeEventListener('beforeunload', beforeUnloadHandler);
+          window.onbeforeunload = null;
+          triggerNavigation();
+          return true;
         }
-        return saved;
+        return false;
       } else if (choice === 'discard') {
-        console.log('FireDocs: Force discarding changes via IPC navigation.');
         isLeaving = true;
         window.removeEventListener('beforeunload', beforeUnloadHandler);
         window.onbeforeunload = null;
-
-        // Use the Main process to navigate for guaranteed success
-        if (window.electron) {
-          try {
-            console.log('FireDocs: Invoking navigate_to_home...');
-            await window.electron.invoke('navigate_to_home');
-          } catch (err) {
-            console.error('FireDocs: navigate_to_home failed:', err);
-            window.location.href = '../../homepage.html';
-          }
-        }
+        triggerNavigation();
         return true;
-      } else {
-        console.log('FireDocs: User cancelled leave dialog.');
-        return false;
       }
+
+      return false;
     };
 
     // Add Home button functionality
@@ -215,28 +285,8 @@ class ElectronRangeTransport extends PDFDataRangeTransport {
         e.preventDefault();
         e.stopPropagation();
 
-        if (await confirmLeave()) {
-          // If we are here, it means we either:
-          // 1. Had no changes (confirmLeave returned true immediately)
-          // 2. Saved successfully (confirmLeave returned true)
-          // 3. Discarded (confirmLeave returned true AND triggered navigation already)
-
-          // In cases 1 and 2, isLeaving will be false, so we navigate.
-          // In case 3, isLeaving will be true, and navigation already happened in confirmLeave.
-          if (!isLeaving) {
-            isLeaving = true;
-            window.removeEventListener('beforeunload', beforeUnloadHandler);
-            window.onbeforeunload = null;
-
-            if (window.electron) {
-              window.electron.invoke('navigate_to_home');
-            } else {
-              const target = '../../homepage.html';
-              console.log('FireDocs: Navigating to:', target);
-              window.location.href = target;
-            }
-          }
-        }
+        // confirmLeave now handles navigation internally for save/discard
+        await confirmLeave();
       });
       console.log('Home button initialized');
     }
@@ -293,6 +343,10 @@ class ElectronRangeTransport extends PDFDataRangeTransport {
 
               const filename = pdfPath.split(/[\\/]/).pop();
               document.title = filename;
+              const windowFilename = document.getElementById('window-filename');
+              if (windowFilename) {
+                windowFilename.textContent = filename + ' - FireDocs';
+              }
             } else if (attempts > 100) {
               clearInterval(checkApp);
               console.error('Timeout waiting for PDFViewerApplication');
@@ -305,8 +359,28 @@ class ElectronRangeTransport extends PDFDataRangeTransport {
         });
     }
 
+    // Custom Window Controls for Electron
+    if (window.electron) {
+      document.getElementById('minBtn')?.addEventListener('click', () => {
+        window.electron.send('window-minimize');
+      });
+      document.getElementById('maxBtn')?.addEventListener('click', () => {
+        window.electron.send('window-maximize');
+      });
+      document.getElementById('closeBtn')?.addEventListener('click', () => {
+        window.electron.send('window-close');
+      });
+    }
+
     // Enhanced keyboard shortcuts
     document.addEventListener('keydown', function (e) {
+      // T: Toggle Titlebar / Decorations
+      if (e.key.toLowerCase() === 't' && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+        const currentlyHidden = localStorage.getItem('fireDocs_hideDecorations') === 'true';
+        const newHideState = !currentlyHidden;
+        applyDecorations(!newHideState);
+        localStorage.setItem('fireDocs_hideDecorations', newHideState ? 'true' : 'false');
+      }
 
       // Home key: Go to first page
       if (e.key === 'Home' && !e.shiftKey && !e.ctrlKey) {
@@ -607,6 +681,7 @@ class ElectronRangeTransport extends PDFDataRangeTransport {
       let rafId = null;
       let accumulatedTicks = 1;
       let lastOrigin = [0, 0];
+      let zoomTimeout = null;
 
       viewerContainer.addEventListener('wheel', function (e) {
         // Only trigger if Ctrl or Meta is held
@@ -616,6 +691,15 @@ class ElectronRangeTransport extends PDFDataRangeTransport {
         e.stopPropagation();
 
         if (!window.PDFViewerApplication || !window.PDFViewerApplication.pdfViewer) return;
+
+        // Add zooming class to disable CSS transitions during rapid wheel zoom
+        viewerContainer.classList.add('zooming');
+
+        // Clear previous timeout and set new one
+        if (zoomTimeout) clearTimeout(zoomTimeout);
+        zoomTimeout = setTimeout(() => {
+          viewerContainer.classList.remove('zooming');
+        }, 150);
 
         const delta = -e.deltaY;
         const SENSITIVITY = 0.002;
@@ -841,6 +925,51 @@ class ElectronRangeTransport extends PDFDataRangeTransport {
     };
 
     setupInkRestriction();
+
+    // --- Slider Progress Track Enhancement ---
+    const setupSliderProgress = () => {
+      const updateSliderProgress = (slider) => {
+        const min = parseFloat(slider.min) || 0;
+        const max = parseFloat(slider.max) || 100;
+        const value = parseFloat(slider.value) || 0;
+        const percentage = ((value - min) / (max - min)) * 100;
+        slider.style.setProperty('--slider-progress', `${percentage}%`);
+      };
+
+      // Initialize all existing sliders
+      const initSliders = () => {
+        document.querySelectorAll('.editorParamsToolbar input[type="range"]').forEach(slider => {
+          updateSliderProgress(slider);
+          slider.addEventListener('input', () => updateSliderProgress(slider));
+          slider.addEventListener('change', () => updateSliderProgress(slider));
+        });
+      };
+
+      // Run on init
+      initSliders();
+
+      // Also observe for dynamically added sliders
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === 1) {
+              const sliders = node.querySelectorAll ?
+                node.querySelectorAll('input[type="range"]') : [];
+              sliders.forEach(slider => {
+                updateSliderProgress(slider);
+                slider.addEventListener('input', () => updateSliderProgress(slider));
+                slider.addEventListener('change', () => updateSliderProgress(slider));
+              });
+            }
+          });
+        });
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+      console.log('Slider progress tracking initialized');
+    };
+
+    setupSliderProgress();
 
     // Initialize custom zoom
     addCustomWheelZoom();

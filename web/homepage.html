@@ -12,6 +12,24 @@
     </script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap">
     <style>
+        #transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            z-index: 999999;
+            opacity: 1;
+            pointer-events: all;
+            transition: opacity 0.3s ease;
+        }
+
+        #transition-overlay.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
         :root {
             --bg-color: #0F0F0F;
             --surface-color: #1A1A1A;
@@ -68,6 +86,8 @@
             background-image:
                 radial-gradient(circle at 10% 20%, rgba(255, 137, 62, 0.05) 0%, transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(252, 202, 128, 0.05) 0%, transparent 40%);
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         /* Header */
@@ -422,15 +442,30 @@
         }
 
         .modal {
-            background: var(--surface-color);
+            background: linear-gradient(180deg, var(--surface-color) 0%, #121212 100%);
             padding: 2.5rem;
             border-radius: 24px;
             width: 90%;
             max-width: 400px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 137, 62, 0.15);
             transform: translateY(20px);
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            z-index: 101;
+        }
+
+        .modal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(255, 137, 62, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+            border-radius: 24px;
         }
 
         .modal-overlay.active .modal {
@@ -463,16 +498,62 @@
             background: #333;
         }
 
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-cancel {
+            background: var(--surface-hover);
+            color: var(--text-primary);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-cancel:hover {
+            background: #333;
+        }
+
+        .btn-confirm {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 0px 15px rgba(255, 137, 62, 0.3);
+        }
+
+        .btn-confirm:hover {
+            opacity: 0.9;
+            box-shadow: 0 0px 24px rgba(255, 137, 62, 0.4);
+        }
+
         /* Settings CSS */
         .settings-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin: 1.5rem 0;
-            padding: 0.8rem;
-            background: rgba(255, 255, 255, 0.03);
+            margin: 1.2rem 0;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.02);
             border-radius: 12px;
             text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: var(--transition);
+        }
+
+        .settings-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 137, 62, 0.1);
         }
 
         .settings-label {
@@ -527,20 +608,101 @@
             transform: translateX(20px);
         }
 
-        .settings-select {
-            background: var(--surface-hover);
-            color: var(--text-primary);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 0.9rem;
-            outline: none;
-            cursor: pointer;
+        /* Custom Dropdown Component */
+        .custom-dropdown {
+            position: relative;
+            min-width: 160px;
+            user-select: none;
         }
 
-        .settings-select:focus {
+        .dropdown-trigger {
+            background: rgba(40, 40, 40, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 40px 10px 16px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .dropdown-trigger:hover {
+            background-color: rgba(60, 60, 60, 0.8);
+            border-color: rgba(255, 137, 62, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .custom-dropdown.active .dropdown-trigger {
             border-color: var(--primary-color);
+            background-color: rgba(30, 30, 30, 0.9);
+            box-shadow: 0 0 0 3px rgba(255, 137, 62, 0.15);
+        }
+
+        .dropdown-trigger svg {
+            position: absolute;
+            right: 14px;
+            transition: transform 0.3s ease;
+        }
+
+        .custom-dropdown.active .dropdown-trigger svg {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 137, 62, 0.2);
+            border-radius: 14px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1000;
+            overflow: hidden;
+            padding: 4px;
+        }
+
+        .custom-dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-option {
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown-option:hover {
+            background: rgba(255, 137, 62, 0.15);
+            color: var(--primary-color);
+            padding-left: 20px;
+        }
+
+        .dropdown-option.selected {
+            background: rgba(255, 137, 62, 0.1);
+            color: var(--primary-color);
         }
 
         @media (max-height: 800px),
@@ -606,11 +768,275 @@
                 height: 36px;
             }
         }
+
+        /* Custom Title Bar - Sizes */
+        .window-titlebar {
+            height: var(--tb-height, 28px);
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 0 0 10px;
+            -webkit-app-region: drag;
+            z-index: 9999;
+        }
+
+        .window-titlebar.size-compact {
+            --tb-height: 28px;
+            --tb-btn-width: 38px;
+        }
+
+        .window-titlebar.size-normal {
+            --tb-height: 34px;
+            --tb-btn-width: 46px;
+        }
+
+        .window-titlebar.size-large {
+            --tb-height: 42px;
+            --tb-btn-width: 56px;
+        }
+
+        .window-title {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: var(--transition);
+        }
+
+        .window-titlebar:hover .window-title {
+            color: var(--primary-color);
+            text-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        .window-title img {
+            width: 14px;
+            height: 14px;
+            filter: drop-shadow(0 0 5px rgba(255, 137, 62, 0.5));
+        }
+
+        .window-controls {
+            display: flex;
+            height: 100%;
+            -webkit-app-region: no-drag;
+        }
+
+        .control-btn {
+            width: var(--tb-btn-width, 36px);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            opacity: 1;
+        }
+
+        .control-btn.close:hover {
+            background: #ED452F !important;
+            color: white !important;
+        }
+
+        .control-btn svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        /* Icon Styles */
+        .window-titlebar.style-classic svg {
+            width: 11px;
+            height: 11px;
+            stroke-width: 1.5;
+        }
+
+        /* Icon Style: macOS */
+        .window-titlebar.style-mac {
+            flex-direction: row;
+            justify-content: flex-start;
+            padding: 0 10px;
+            position: relative;
+        }
+
+        .style-mac .window-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-left: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .style-mac .window-controls {
+            order: 0;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .style-mac .control-btn {
+            width: 12px !important;
+            height: 12px !important;
+            border-radius: 50% !important;
+            margin: 0 !important;
+            opacity: 1 !important;
+            position: relative;
+        }
+
+        .style-mac .control-btn svg {
+            display: none;
+        }
+
+        .style-mac #closeBtn {
+            background: #ff5f56 !important;
+            order: 0;
+        }
+
+        .style-mac #minBtn {
+            background: #febc2e !important;
+            order: 1;
+        }
+
+        .style-mac #maxBtn {
+            background: #28c940 !important;
+            order: 2;
+        }
+
+        .style-mac .control-btn:hover {
+            filter: brightness(0.8);
+        }
+
+        /* Icon Style: Windows 10 */
+        .style-win10 .control-btn {
+            border-radius: 0;
+            opacity: 1;
+        }
+
+        .style-win10 #closeBtn:hover {
+            background: #e81123 !important;
+        }
+
+        /* Icon Style: Windows 11 */
+        .style-win11 .control-btn {
+            border-radius: 4px;
+            margin: 2px;
+            height: calc(100% - 4px);
+        }
+
+        .style-win11 .control-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Icon Style: Adwaita */
+        .style-adwaita .window-controls {
+            align-items: center !important;
+            padding-right: 8px !important;
+            gap: 4px !important;
+        }
+
+        .style-adwaita .control-btn {
+            border-radius: 50% !important;
+            width: 24px !important;
+            height: 24px !important;
+            margin: 0 !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            opacity: 1 !important;
+        }
+
+        .style-adwaita .control-btn:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+        }
+
+        .style-adwaita #closeBtn:hover {
+            background: #e11f1f !important;
+            color: white !important;
+        }
+
+        .style-adwaita svg {
+            width: 10px !important;
+            height: 10px !important;
+            stroke-width: 1.1 !important;
+        }
+
+        /* Icon Style: Minimal */
+        .style-minimal .control-btn svg {
+            display: none !important;
+        }
+
+        .style-minimal .control-btn::after {
+            content: '' !important;
+            width: 6px !important;
+            height: 6px !important;
+            border-radius: 50% !important;
+            background: currentColor !important;
+            opacity: 0.5 !important;
+        }
+
+        .style-minimal .control-btn:hover::after {
+            opacity: 1 !important;
+            transform: scale(1.2) !important;
+        }
     </style>
 </head>
 
 <body>
-    <header data-tauri-drag-region>
+    <div id="transition-overlay"></div>
+    <div class="window-titlebar" id="customTitlebar">
+        <script>
+            (function () {
+                const tb = document.currentScript.parentElement;
+                const size = localStorage.getItem('fireDocs_tbSize') || 'compact';
+                const style = localStorage.getItem('fireDocs_tbStyle') || 'modern';
+                tb.classList.add(`size-${size}`, `style-${style}`);
+                if (localStorage.getItem('fireDocs_hideDecorations') === 'true') {
+                    tb.style.display = 'none';
+                }
+            })();
+        </script>
+        <div class="window-title">
+            <img src="icon.png" alt="FireDocs">
+            <span>FireDocs</span>
+        </div>
+        <div class="window-controls">
+            <div class="control-btn" id="minBtn" title="Minimize">
+                <svg viewBox="0 0 12 12">
+                    <rect width="10" height="1" x="1" y="6" fill="currentColor" />
+                </svg>
+            </div>
+            <div class="control-btn" id="maxBtn" title="Maximize">
+                <svg viewBox="0 0 12 12">
+                    <rect width="9" height="9" x="1.5" y="1.5" fill="none" stroke="currentColor" stroke-width="1" />
+                </svg>
+            </div>
+            <div class="control-btn close" id="closeBtn" title="Close">
+                <svg viewBox="0 0 12 12">
+                    <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.2" />
+                </svg>
+            </div>
+        </div>
+    </div>
+    <header style="-webkit-app-region: drag;">
+        <style>
+            .header-controls,
+            .brand-icon,
+            .btn-browse,
+            button,
+            input,
+            select {
+                -webkit-app-region: no-drag;
+            }
+        </style>
         <div class="header-controls">
             <button class="icon-btn" id="settingsBtn" title="Settings">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -683,7 +1109,7 @@
     <div class="modal-overlay" id="aboutModal">
         <div class="modal">
             <h2>FireDocs</h2>
-            <p>Version 2.1.0</p>
+            <p>Version 2.2.0</p>
             <p data-i18n="aboutDescription">A minimalist, blazing fast PDF viewer built with Tauri.</p>
             <button class="btn-close" id="closeModal" data-i18n="close">Close</button>
         </div>
@@ -695,10 +1121,19 @@
             <h2 data-i18n="settings">Settings</h2>
             <div class="settings-row">
                 <span class="settings-label" data-i18n="language">Language</span>
-                <select class="settings-select" id="languageSelect">
-                    <option value="en">English</option>
-                    <option value="ar">العربية (Arabic)</option>
-                </select>
+                <div class="custom-dropdown" id="languageDropdown">
+                    <div class="dropdown-trigger">
+                        <span class="current-value">English</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-option" data-value="en">English</div>
+                        <div class="dropdown-option" data-value="ar">العربية (Arabic)</div>
+                    </div>
+                </div>
             </div>
             <div class="settings-row">
                 <span class="settings-label" data-i18n="hideTitleBar">Hide System Title Bar</span>
@@ -707,7 +1142,61 @@
                     <span class="slider"></span>
                 </label>
             </div>
+            <div class="settings-row">
+                <span class="settings-label" data-i18n="tbSize">Title Bar Height</span>
+                <div class="custom-dropdown" id="tbSizeDropdown">
+                    <div class="dropdown-trigger">
+                        <span class="current-value" data-i18n="compact">Compact (28px)</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-option" data-value="compact" data-i18n="compact">Compact (28px)</div>
+                        <div class="dropdown-option" data-value="normal" data-i18n="normal">Normal (34px)</div>
+                        <div class="dropdown-option" data-value="large" data-i18n="large">Large (42px)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-row">
+                <span class="settings-label" data-i18n="tbStyle">Button Icon Style</span>
+                <div class="custom-dropdown" id="tbStyleDropdown">
+                    <div class="dropdown-trigger">
+                        <span class="current-value" data-i18n="modern">Modern</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-option" data-value="modern" data-i18n="modern">Modern</div>
+                        <div class="dropdown-option" data-value="mac" data-i18n="mac">macOS</div>
+                        <div class="dropdown-option" data-value="adwaita" data-i18n="adwaita">Adwaita</div>
+                        <div class="dropdown-option" data-value="win10" data-i18n="win10">Windows 10</div>
+                        <div class="dropdown-option" data-value="win11" data-i18n="win11">Windows 11</div>
+                        <div class="dropdown-option" data-value="minimal" data-i18n="minimal">Minimal</div>
+                    </div>
+                </div>
+            </div>
             <button class="btn-close" id="closeSettingsModal" data-i18n="close">Close</button>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <style>
+            #confirmModal .modal {
+                max-width: 300px !important;
+            }
+        </style>
+        <div class="modal">
+            <h2 id="confirmTitle">Confirmation</h2>
+            <p id="confirmMessage">Are you sure?</p>
+            <div class="modal-actions">
+                <button class="btn-cancel" id="confirmCancel" data-i18n="cancel">Cancel</button>
+                <button class="btn-confirm" id="confirmOk" data-i18n="confirm">Confirm</button>
+            </div>
         </div>
     </div>
 
@@ -728,7 +1217,13 @@
         const creditsLink = document.getElementById('creditsLink');
         const hideDecorationsToggle = document.getElementById('hideDecorationsToggle');
 
-        const languageSelect = document.getElementById('languageSelect');
+        // Confirmation Modal Elements
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmTitle = document.getElementById('confirmTitle');
+        const confirmMessage = document.getElementById('confirmMessage');
+        const confirmCancel = document.getElementById('confirmCancel');
+        const confirmOk = document.getElementById('confirmOk');
+        let confirmCallback = null;
 
         let recents = [];
 
@@ -747,8 +1242,23 @@
                 settings: "Settings",
                 language: "Language",
                 hideTitleBar: "Hide System Title Bar",
+                tbSize: "Title Bar Height",
+                tbStyle: "Button Icon Style",
                 confirmClear: "Clear all recent files?",
-                confirmRemove: "Remove this file from recents?"
+                confirmRemove: "Remove this file from recents?",
+                compact: "Compact (28px)",
+                normal: "Normal (34px)",
+                large: "Large (42px)",
+                modern: "Modern",
+                mac: "macOS",
+                adwaita: "Adwaita",
+                win10: "Windows 10",
+                win11: "Windows 11",
+                minimal: "Minimal",
+                cancel: "Cancel",
+                confirm: "Confirm",
+                removeFile: "Remove File",
+                confirmation: "Confirmation"
             },
             ar: {
                 dropTitle: "أفلت ملف PDF هنا",
@@ -764,32 +1274,139 @@
                 settings: "الإعدادات",
                 language: "اللغة",
                 hideTitleBar: "إخفاء شريط العنوان",
+                tbSize: "ارتفاع شريط العنوان",
+                tbStyle: "نمط الأزرار",
                 confirmClear: "هل أنت متأكد من مسح جميع الملفات الحديثة؟",
-                confirmRemove: "هل تريد إزالة هذا الملف من القائمة؟"
+                confirmRemove: "هل تريد إزالة هذا الملف من القائمة؟",
+                compact: "مدمج (28 بكسل)",
+                normal: "عادي (34 بكسل)",
+                large: "كبير (42 بكسل)",
+                modern: "حديث",
+                mac: "ماك",
+                adwaita: "أدوايتا",
+                win10: "ويندوز 10",
+                win11: "ويندوز 11",
+                minimal: "بسيط",
+                cancel: "إلغاء",
+                confirm: "تأكيد",
+                removeFile: "إزالة الملف",
+                confirmation: "تأكيد"
             }
         };
 
         async function init() {
             loadRecents();
             // renderRecents() is called inside setLanguage because noRecents text needs translation
+            initCustomDropdowns();
             loadSettings();
             setupListeners();
+            setupConfirmModal();
+        }
+
+        function setupConfirmModal() {
+            confirmCancel.addEventListener('click', () => {
+                confirmModal.classList.remove('active');
+                confirmCallback = null;
+            });
+
+            confirmOk.addEventListener('click', () => {
+                if (confirmCallback) confirmCallback();
+                confirmModal.classList.remove('active');
+                confirmCallback = null;
+            });
+
+            confirmModal.addEventListener('click', (e) => {
+                if (e.target === confirmModal) {
+                    confirmModal.classList.remove('active');
+                    confirmCallback = null;
+                }
+            });
+        }
+
+        function showConfirmModal(title, message, callback) {
+            confirmTitle.textContent = title;
+            confirmMessage.textContent = message;
+            confirmCallback = callback;
+            confirmModal.classList.add('active');
+        }
+
+        function getCustomValue(id) {
+            const dropdown = document.getElementById(id);
+            if (!dropdown) return null;
+            const selected = dropdown.querySelector('.dropdown-option.selected');
+            return selected ? selected.getAttribute('data-value') : dropdown.querySelector('.dropdown-option').getAttribute('data-value');
+        }
+
+        function setCustomValue(id, val) {
+            const dropdown = document.getElementById(id);
+            if (!dropdown) return;
+            const options = dropdown.querySelectorAll('.dropdown-option');
+            options.forEach(opt => {
+                if (opt.getAttribute('data-value') === val) {
+                    opt.classList.add('selected');
+                    dropdown.querySelector('.current-value').textContent = opt.textContent;
+                } else {
+                    opt.classList.remove('selected');
+                }
+            });
+        }
+
+        function initCustomDropdowns() {
+            document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
+                const trigger = dropdown.querySelector('.dropdown-trigger');
+                const menu = dropdown.querySelector('.dropdown-menu');
+                const options = dropdown.querySelectorAll('.dropdown-option');
+
+                trigger.onclick = (e) => {
+                    e.stopPropagation();
+                    const isActive = dropdown.classList.contains('active');
+                    // Close all others
+                    document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('active'));
+                    if (!isActive) dropdown.classList.add('active');
+                };
+
+                options.forEach(opt => {
+                    opt.onclick = (e) => {
+                        e.stopPropagation();
+                        const val = opt.getAttribute('data-value');
+                        setCustomValue(dropdown.id, val);
+                        dropdown.classList.remove('active');
+                        saveSettings();
+                        if (dropdown.id === 'languageDropdown') {
+                            setLanguage(val);
+                        }
+                    };
+                });
+            });
+
+            window.onclick = () => {
+                document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('active'));
+            };
         }
 
         function loadSettings() {
             const hideDecorations = localStorage.getItem('fireDocs_hideDecorations') === 'true';
             hideDecorationsToggle.checked = hideDecorations;
-            if (hideDecorations) {
-                applyDecorations(false);
-            }
+            applyDecorations(!hideDecorations);
 
             const storedLang = localStorage.getItem('fireDocs_language') || 'en';
-            languageSelect.value = storedLang;
+            setCustomValue('languageDropdown', storedLang);
             setLanguage(storedLang);
+
+            const storedSize = localStorage.getItem('fireDocs_tbSize') || 'compact';
+            setCustomValue('tbSizeDropdown', storedSize);
+
+            const storedStyle = localStorage.getItem('fireDocs_tbStyle') || 'modern';
+            setCustomValue('tbStyleDropdown', storedStyle);
+
+            updateTitlebarStyles();
         }
 
         function saveSettings() {
             localStorage.setItem('fireDocs_hideDecorations', hideDecorationsToggle.checked);
+            localStorage.setItem('fireDocs_tbSize', getCustomValue('tbSizeDropdown'));
+            localStorage.setItem('fireDocs_tbStyle', getCustomValue('tbStyleDropdown'));
+            updateTitlebarStyles();
         }
 
         function setLanguage(lang) {
@@ -819,10 +1436,31 @@
             if (window.electron) {
                 try {
                     await window.electron.invoke('set_titlebar_visible', show);
+                    const titlebar = document.getElementById('customTitlebar');
+                    if (titlebar) {
+                        titlebar.style.display = show ? 'flex' : 'none';
+                        updateTitlebarStyles();
+                    }
                 } catch (e) {
                     console.error('Failed to toggle titlebar:', e);
                 }
             }
+        }
+
+        function updateTitlebarStyles() {
+            const titlebar = document.getElementById('customTitlebar');
+            if (!titlebar) return;
+
+            const size = localStorage.getItem('fireDocs_tbSize') || 'compact';
+            const style = localStorage.getItem('fireDocs_tbStyle') || 'modern';
+
+            // Remove previous size/style classes
+            titlebar.classList.remove('size-compact', 'size-normal', 'size-large');
+            titlebar.classList.remove('style-modern', 'style-mac', 'style-adwaita', 'style-win10', 'style-win11', 'style-minimal');
+
+            // Add current
+            titlebar.classList.add(`size-${size}`);
+            titlebar.classList.add(`style-${style}`);
         }
 
         async function openPdf(path) {
@@ -834,13 +1472,34 @@
 
                 addToRecents(path);
 
-                const viewerUrl = `pdfjs/web/viewer.html?file=&pdfPath=${encodeURIComponent(path)}`;
-                window.location.href = viewerUrl;
+                const overlay = document.getElementById('transition-overlay');
+                if (overlay) {
+                    overlay.classList.remove('fade-out');
+                    // Wait for transition before navigating
+                    setTimeout(() => {
+                        const viewerUrl = `pdfjs/web/viewer.html?file=&pdfPath=${encodeURIComponent(path)}`;
+                        window.location.href = viewerUrl;
+                    }, 300);
+                } else {
+                    const viewerUrl = `pdfjs/web/viewer.html?file=&pdfPath=${encodeURIComponent(path)}`;
+                    window.location.href = viewerUrl;
+                }
             } catch (err) {
                 console.error('Failed to open PDF:', err);
                 alert('Failed to open PDF: ' + err);
             }
         }
+
+        // Transition In on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('transition-overlay');
+            if (overlay) {
+                // Small delay to ensure render
+                setTimeout(() => {
+                    overlay.classList.add('fade-out');
+                }, 50);
+            }
+        });
 
         function addToRecents(path) {
             recents = recents.filter(r => r.path !== path);
@@ -864,24 +1523,28 @@
         }
 
         function clearRecents() {
-            const currentLang = languageSelect.value;
+            const currentLang = localStorage.getItem('fireDocs_language') || 'en';
             const msg = translations[currentLang].confirmClear;
-            if (confirm(msg)) {
+            const title = translations[currentLang].clearAll;
+
+            showConfirmModal(title, msg, () => {
                 recents = [];
                 saveRecents();
                 renderRecents();
-            }
+            });
         }
 
         function removeRecent(index, event) {
-            event.stopPropagation(); // Prevent opening the file
-            const currentLang = languageSelect.value;
+            if (event) event.stopPropagation(); // Prevent opening the file
+            const currentLang = localStorage.getItem('fireDocs_language') || 'en';
             const msg = translations[currentLang].confirmRemove;
-            if (confirm(msg)) {
+            const title = translations[currentLang].removeFile;
+
+            showConfirmModal(title, msg, () => {
                 recents.splice(index, 1);
                 saveRecents();
                 renderRecents();
-            }
+            });
         }
 
         // Expose to window for the onclick handler in string template
@@ -889,7 +1552,7 @@
         window.openPdf = openPdf;
 
         function renderRecents() {
-            const currentLang = languageSelect.value;
+            const currentLang = localStorage.getItem('fireDocs_language') || 'en';
             if (recents.length === 0) {
                 recentsList.innerHTML = `<div class="empty-state" data-i18n="noRecents">${translations[currentLang].noRecents}</div>`;
                 clearRecentsBtn.style.display = 'none';
@@ -996,16 +1659,6 @@
                 if (e.target === settingsModal) settingsModal.classList.remove('active');
             });
 
-            languageSelect.addEventListener('change', (e) => {
-                setLanguage(e.target.value);
-            });
-
-            hideDecorationsToggle.addEventListener('change', () => {
-                saveSettings();
-                const hide = hideDecorationsToggle.checked;
-                applyDecorations(!hide);
-            });
-
             dropZone.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 dropZone.classList.add('drag-over');
@@ -1043,6 +1696,17 @@
                     }
                 });
             }
+
+            // Electron window controls
+            document.getElementById('minBtn').addEventListener('click', () => {
+                window.electron.send('window-minimize');
+            });
+            document.getElementById('maxBtn').addEventListener('click', () => {
+                window.electron.send('window-maximize');
+            });
+            document.getElementById('closeBtn').addEventListener('click', () => {
+                window.electron.send('window-close');
+            });
         }
 
         init();

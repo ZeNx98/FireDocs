@@ -33,21 +33,21 @@ FireDocs is a PDF viewer built for people who want a dedicated space for reading
 
 **AppImage (Portable)**
 ```bash
-chmod +x FireDocs-2.1.0.AppImage 
-./FireDocs-2.1.0.AppImage
+chmod +x FireDocs-2.2.0.AppImage 
+./FireDocs-2.2.0.AppImage
 ```
 
 **Debian / Ubuntu (.deb)**
 ```bash
 # Download the .deb file and run:
 sudo apt update
-sudo apt install ./firedocs_2.1.0_amd64.deb 
+sudo apt install ./firedocs_2.2.0_amd64.deb 
 ```
 
 **Fedora / Red Hat (.rpm)**
 ```bash
 # Download the .rpm file and run:
-sudo dnf install ./firedocs-2.1.0.x86_64.rpm 
+sudo dnf install ./firedocs-2.2.0.x86_64.rpm 
 ```
 
 **Arch Linux**
@@ -57,10 +57,10 @@ yay -S firedocs
 ```
 
 #### **Windows**
-Download the **FireDocs-Setup-2.1.0.exe** from the **[latest release](https://github.com/ZeNx98/FireDocs/releases)**.
+Download the **FireDocs-Setup-2.2.0.exe** from the **[latest release](https://github.com/ZeNx98/FireDocs/releases)**.
 
 #### **macOS**
-Download the **FireDocs-2.1.0-arm64.dmg** from the releases page, drag the **FireDocs** icon into your **Applications** folder.
+Download the **FireDocs-2.2.0-arm64.dmg** from the releases page, drag the **FireDocs** icon into your **Applications** folder.
 
 ---
 

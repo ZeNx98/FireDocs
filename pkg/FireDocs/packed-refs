@@ -1,0 +1,9 @@
+# pack-refs with: peeled fully-peeled sorted 
+4b11589b1d3652e1e939f82f019758a4727ce52e refs/heads/Require-Firefox
+0a037464e396559342f9707b867c8415ded707bd refs/heads/main
+eb453a2b3113e0435fdf7866612fc83e29316eda refs/heads/tauri
+8e8f2806dfc59b5a8559d2031a30fce836d665b2 refs/tags/beta
+1c383dda123a7f3edb6b33a149dae14b6a471582 refs/tags/tauri
+c2a6715a552c221d9ce934b94ee17b057286e755 refs/tags/v2.1.0
+3d4fd3960c9f589e718eb8fbe96536d8a20dc04e refs/tags/v3.0.0
+1c383dda123a7f3edb6b33a149dae14b6a471582 refs/tags/v3.2.2

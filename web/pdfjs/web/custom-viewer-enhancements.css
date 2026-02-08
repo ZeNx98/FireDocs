@@ -1,7 +1,16 @@
 /* FireDocs Homepage Theme Port */
 /* Matches the dark/orange aesthetic of homepage.html */
 
+::selection {
+  background-color: var(--selection-bg) !important;
+}
+
+.textLayer ::selection {
+  background-color: rgba(255, 137, 62, 0.4) !important;
+}
+
 :root {
+  --selection-bg: rgba(255, 137, 62, 0.3);
   /* Home: House */
   --toolbarButton-home-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>') !important;
 
@@ -18,6 +27,12 @@
   --text-primary: #FFFFFF;
   --text-secondary: #AAAAAA;
   --border-radius: 16px;
+  --sidebar-transition-duration: 400ms !important;
+  --sidebar-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+  /* Transition Overlay */
+  --overlay-z-index: 200000;
+  --transition: all 0.2s ease;
 
   /* PDF.js Overrides */
   --body-bg-color: var(--bg-color) !important;
@@ -41,8 +56,8 @@
   --button-primary-hover-bg-color: #ED452F !important;
   --link-fg-color: var(--primary-color) !important;
   --radio-checked-border-color: var(--primary-color) !important;
-  --highlight-bg-color: rgba(252, 202, 128, 0.4) !important;
-  /* Using #FCCA80 for highlights */
+  --highlight-bg-color: rgba(255, 137, 62, 0.3) !important;
+  --highlight-selected-bg-color: rgba(255, 69, 47, 0.6) !important;
 
   /* --- Sidebar Icons (Lucide Style) --- */
   /* Thumbnail: Layout Grid */
@@ -114,6 +129,308 @@
   --toolbarButton-editorStamp-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>') !important;
 }
 
+.textLayer .highlight {
+  background-color: var(--highlight-bg-color) !important;
+  border-radius: 2px !important;
+}
+
+.textLayer .highlight.selected {
+  background-color: var(--highlight-selected-bg-color) !important;
+  box-shadow: 0 0 8px var(--primary-glow) !important;
+}
+
+/* --- Custom Title Bar - Sizes --- */
+.window-titlebar {
+  height: var(--tb-height, 28px) !important;
+  background: var(--surface-color) !important;
+  display: flex;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 0 0 10px !important;
+  -webkit-app-region: drag !important;
+  z-index: 100000 !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.window-titlebar.size-compact {
+  --tb-height: 28px;
+  --tb-btn-width: 38px;
+}
+
+.window-titlebar.size-normal {
+  --tb-height: 34px;
+  --tb-btn-width: 46px;
+}
+
+.window-titlebar.size-large {
+  --tb-height: 42px;
+  --tb-btn-width: 56px;
+}
+
+.hide-decorations-active .window-titlebar {
+  display: none !important;
+}
+
+.window-title {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: var(--text-secondary) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  pointer-events: none !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  transition: all 0.3s ease !important;
+}
+
+.window-titlebar:hover .window-title {
+  color: var(--primary-color) !important;
+  text-shadow: 0 0 8px var(--primary-glow) !important;
+}
+
+.window-title img {
+  width: 14px !important;
+  height: 14px !important;
+  filter: drop-shadow(0 0 5px rgba(255, 137, 62, 0.5)) !important;
+}
+
+.window-controls {
+  display: flex !important;
+  height: 100% !important;
+  -webkit-app-region: no-drag !important;
+}
+
+.control-btn svg {
+  width: 10px !important;
+  height: 10px !important;
+}
+
+/* Icon Styles */
+/* Icon Style: macOS */
+.window-titlebar.style-mac {
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+  padding: 0 10px !important;
+  position: relative !important;
+}
+
+.style-mac .control-btn {
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 50% !important;
+  margin: 0 !important;
+  opacity: 1 !important;
+  position: relative !important;
+}
+
+.style-mac .window-title {
+  position: absolute !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  margin-left: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.style-mac .window-controls {
+  order: 0 !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+.style-mac .control-btn svg {
+  display: none !important;
+}
+
+.style-mac #closeBtn {
+  background: #ff5f56 !important;
+  order: 0 !important;
+}
+
+.style-mac #minBtn {
+  background: #febc2e !important;
+  order: 1 !important;
+}
+
+.style-mac #maxBtn {
+  background: #28c940 !important;
+  order: 2 !important;
+}
+
+.style-mac .control-btn:hover {
+  filter: brightness(0.8) !important;
+}
+
+/* Icon Style: Windows 10 */
+.style-win10 .control-btn {
+  border-radius: 0 !important;
+  opacity: 1 !important;
+}
+
+.style-win10 #closeBtn:hover {
+  background: #e81123 !important;
+  color: white !important;
+}
+
+/* Icon Style: Windows 11 */
+.style-win11 .control-btn {
+  border-radius: 4px !important;
+  margin: 2px !important;
+  height: calc(100% - 4px) !important;
+}
+
+.style-win11 .control-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Icon Style: Adwaita */
+.style-adwaita .window-controls {
+  align-items: center !important;
+  padding-right: 8px !important;
+  gap: 4px !important;
+}
+
+.style-adwaita .control-btn {
+  border-radius: 50% !important;
+  width: 24px !important;
+  height: 24px !important;
+  margin: 0 !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  opacity: 1 !important;
+}
+
+.style-adwaita .control-btn:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+.style-adwaita #closeBtn:hover {
+  background: #e11f1f !important;
+  color: white !important;
+}
+
+.style-adwaita svg {
+  width: 11px !important;
+  height: 11px !important;
+  stroke-width: 1.1 !important;
+}
+
+/* Icon Style: Minimal */
+.style-minimal .control-btn svg {
+  display: none !important;
+}
+
+.style-minimal .control-btn::after {
+  content: '' !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background: currentColor !important;
+  opacity: 0.5 !important;
+  transition: var(--transition) !important;
+}
+
+.style-minimal .control-btn:hover::after {
+  opacity: 1 !important;
+  transform: scale(1.2) !important;
+}
+
+.control-btn {
+  width: var(--tb-btn-width, 36px) !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  color: var(--text-secondary) !important;
+  opacity: 0.7 !important;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-primary) !important;
+  opacity: 1 !important;
+}
+
+/* Titles */
+:is(.dialog .mainContainer) .title {
+  display: none !important;
+  /* Disable unsaved changes text */
+}
+
+/* Description text - Increased wording */
+:is(.dialog .mainContainer) .description {
+  color: #CCCCCC !important;
+  font-size: 1.05rem !important;
+  line-height: 1.6 !important;
+  margin-bottom: 2.5rem !important;
+  font-weight: 400 !important;
+}
+
+/* Buttons */
+:is(.dialog .mainContainer) button {
+  border-radius: 12px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  text-transform: none !important;
+  letter-spacing: 0.01em;
+  padding: 1.2rem 2rem !important;
+  /* Keep width, increase height via padding */
+  font-size: 1rem !important;
+  flex: 1 !important;
+  min-width: 100px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+/* Button Group Layout */
+:is(.dialog .mainContainer) .dialogButtonsGroup {
+  display: flex !important;
+  gap: 12px !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+
+.control-btn.close:hover {
+  background: #ED452F !important;
+  color: white !important;
+}
+
+.control-btn svg {
+  width: 10px !important;
+  height: 10px !important;
+}
+
+/* Fix the gap by using flex layout for body and proper relative sizing */
+body {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+#outerContainer {
+  flex: 1 !important;
+  position: relative !important;
+  top: 0 !important;
+  height: auto !important;
+  width: 100% !important;
+}
+
+.hide-decorations-active #outerContainer {
+  top: 0 !important;
+  height: 100% !important;
+}
+
+
 /* Base Typography */
 body,
 button,
@@ -140,6 +457,57 @@ textarea {
 #toolbarViewerMiddle {
   display: flex !important;
   align-items: center !important;
+}
+
+[data-tauri-drag-region] {
+  -webkit-app-region: drag !important;
+}
+
+.toolbarButton,
+.dropdownToolbarButton,
+#customZoomButton,
+#pageNumber,
+#numPages,
+.icon-btn,
+button {
+  -webkit-app-region: no-drag !important;
+}
+
+/* Page Navigation Styling */
+#pageNumber {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: var(--text-primary) !important;
+  border-radius: 8px !important;
+  padding: 4px 8px !important;
+  width: 45px !important;
+  text-align: center !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  margin-right: 8px !important;
+}
+
+#pageNumber:focus {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px rgba(255, 137, 62, 0.15) !important;
+  outline: none !important;
+}
+
+/* Hide Number Input Spinners */
+#pageNumber::-webkit-outer-spin-button,
+#pageNumber::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+
+#numPages {
+  color: var(--text-secondary) !important;
+  font-size: 0.9rem !important;
+  font-weight: 400 !important;
+  opacity: 0.8 !important;
+  user-select: none !important;
 }
 
 /* Toolbar Buttons */
@@ -192,7 +560,7 @@ textarea {
 /* Icons */
 .toolbarButton::before,
 .secondaryToolbarButton::before {
-  opacity: 0.8;
+  opacity: 0.9;
   /* Default PDF.js masking behavior preserved */
 }
 
@@ -214,9 +582,9 @@ textarea {
 /* Toggled / Active State */
 .toolbarButton.toggled,
 .splitToolbarButton.toggled>.toolbarButton.toggled {
-  background: rgba(237, 69, 47, 0.15) !important;
+  background: rgba(255, 137, 62, 0.12) !important;
   color: var(--primary-color) !important;
-  box-shadow: 0 0 10px var(--primary-glow);
+  box-shadow: 0 0 8px rgba(255, 69, 47, 0.2) !important;
 }
 
 .toolbarButton.toggled::before {
@@ -226,30 +594,193 @@ textarea {
 /* --- Sidebar --- */
 #sidebarContainer {
   background-color: var(--surface-color) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+  transition: width var(--sidebar-transition-duration) var(--sidebar-transition-timing-function),
+    inset-inline-start var(--sidebar-transition-duration) var(--sidebar-transition-timing-function) !important;
+}
+
+#mainContainer,
+#viewerContainer {
+  transition: inset-inline-start var(--sidebar-transition-duration) var(--sidebar-transition-timing-function) !important;
+}
+
+#sidebarContent {
+  background-color: rgba(15, 15, 15, 0.5) !important;
+  backdrop-filter: blur(5px);
+  top: 48px !important;
+  z-index: 1 !important;
+  transition: opacity var(--sidebar-transition-duration) var(--sidebar-transition-timing-function) !important;
+}
+
+#outerContainer:not(.sidebarOpen) #sidebarContent {
+  opacity: 0 !important;
+}
+
+#outerContainer.sidebarOpen #sidebarContent {
+  opacity: 1 !important;
 }
 
 #toolbarSidebar {
   background-color: var(--surface-color) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
   box-shadow: none !important;
+  height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  position: relative !important;
+  z-index: 10 !important;
+  overflow: visible !important;
+  padding: 0 4px !important;
 }
 
+#toolbarSidebarLeft,
+#toolbarSidebarRight {
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Sidebar Thumbnails */
 .thumbnail {
   border: 2px solid transparent !important;
-  border-radius: 8px;
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
+  border-radius: 12px !important;
+  opacity: 0.6;
+  transition: all 0.25s ease !important;
+  margin: 10px auto !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  padding: 4px !important;
 }
 
 .thumbnail:hover {
-  opacity: 1;
+  opacity: 0.9;
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
 .thumbnail.selected {
   border-color: var(--primary-color) !important;
   opacity: 1;
-  box-shadow: 0 0 15px var(--primary-glow) !important;
+  background: rgba(255, 137, 62, 0.08) !important;
+  box-shadow: 0 0 10px rgba(255, 137, 62, 0.4) !important;
+  transform: scale(1.02);
+}
+
+.thumbnailSelectionRing {
+  display: none !important;
+}
+
+/* Outline, Attachments, Layers (Sidebar Lists) */
+.outlineItem,
+.attachmentsItem,
+.layersItem,
+.treeItem {
+  padding: 6px 10px !important;
+  margin: 2px 8px !important;
+  border-radius: 8px !important;
+  color: var(--text-secondary) !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  font-size: 0.85rem !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.outlineItem:hover,
+.attachmentsItem:hover,
+.layersItem:hover,
+.treeItem:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-primary) !important;
+  transform: translateX(2px);
+}
+
+.outlineItem.selected,
+.outlineItem.current,
+.attachmentsItem.selected,
+.layersItem.selected,
+.treeItem.selected {
+  background-color: rgba(237, 69, 47, 0.12) !important;
+  color: var(--primary-color) !important;
+  font-weight: 600 !important;
+  box-shadow: inset 2px 0 0 var(--primary-color) !important;
+}
+
+.outlineItemToggler {
+  filter: invert(1) opacity(0.5);
+  /* Make the arrow white */
+}
+
+.outlineItemToggler:hover {
+  filter: invert(1) opacity(1);
+}
+
+/* Sidebar Resizer */
+#sidebarResizer {
+  width: 4px !important;
+  background-color: transparent !important;
+  transition: background-color 0.2s ease !important;
+}
+
+#sidebarResizer:hover,
+#sidebarResizer:active {
+  background-color: var(--primary-color) !important;
+  box-shadow: 0 0 10px var(--primary-glow) !important;
+}
+
+/* Sidebar Specific Button Tweaks */
+#sidebarViewButtons {
+  padding: 3px !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-radius: 12px !important;
+  margin: 0 12px !important;
+  display: flex !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+#sidebarViewButtons .toolbarButton {
+  margin: 0 !important;
+  border-radius: 8px !important;
+  width: 36px !important;
+  height: 32px !important;
+}
+
+#currentOutlineItem {
+  display: none !important;
+}
+
+#toolbarSidebarRight .verticalToolbarSeparator {
+  height: 20px !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  margin: 0 8px !important;
+}
+
+#sidebarViewButtons .toolbarButton.toggled {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  box-shadow: 0 2px 8px rgba(255, 69, 47, 0.3) !important;
+}
+
+#sidebarViewButtons .toolbarButton.toggled::before {
+  background-color: white !important;
+  opacity: 1 !important;
+}
+
+/* Custom Sidebar Scrollbar */
+#sidebarContent::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+#sidebarContent::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+#sidebarContent::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+}
+
+#sidebarContent::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color) !important;
 }
 
 /* --- Viewer Area --- */
@@ -266,6 +797,29 @@ textarea {
   border-radius: 4px !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
   margin-bottom: 25px !important;
+  transition: transform 0.15s ease-out !important;
+}
+
+.page canvas,
+.page .canvasWrapper {
+  transition: none !important;
+}
+
+.page .textLayer,
+.page .annotationLayer,
+.page .annotationEditorLayer {
+  transition: none !important;
+}
+
+/* Smooth zoom transition for the viewer */
+#viewer {
+  transition: transform 0.15s ease-out;
+}
+
+/* During active zooming, temporarily disable transitions for performance */
+#viewerContainer.zooming .page,
+#viewerContainer.zooming #viewer {
+  transition: none !important;
 }
 
 /* Fix Pen Tool Offset - Reset to check natural state */
@@ -287,24 +841,193 @@ textarea {
 
 /* --- Find Bar --- */
 #findbar {
-  background-color: rgba(26, 26, 26, 0.95) !important;
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 12px;
+  background-color: rgba(26, 26, 26, 0.9) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(255, 137, 62, 0.15) !important;
+  border-radius: 16px !important;
   color: var(--text-primary) !important;
-  top: 60px !important;
+  position: fixed !important;
+  top: 54px !important;
+  left: 10px !important;
+  right: auto !important;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6) !important;
+  padding: 12px !important;
+  min-width: 320px !important;
+  transform-origin: top !important;
+
+  /* Transition Logic for Open/Close */
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.5s !important;
+  opacity: 1 !important;
+
+
+
+  transform: translateY(0) !important;
+  pointer-events: auto !important;
+  visibility: visible !important;
 }
 
-.toolbarField {
-  background-color: rgba(0, 0, 0, 0.3) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: var(--text-primary) !important;
-  border-radius: 6px !important;
+#findbar.hidden {
+  display: flex !important;
+  opacity: 0 !important;
+  transform: translateY(-20px) !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
 }
 
-.toolbarField:focus {
+/* Staggered Content Animation */
+#findbar>* {
+  transition: opacity 0.2s ease !important;
+  opacity: 1 !important;
+}
+
+#findbar.hidden>* {
+  opacity: 0 !important;
+  transition: opacity 0.1s ease !important;
+  /* Disappear faster than the box */
+}
+
+#findbar:not(.hidden)>* {
+  transition-delay: 0.1s !important;
+  /* Wait for box to start opening */
+}
+
+#findbar .toolbarHorizontalGroup {
+  margin-bottom: 12px !important;
+  gap: 12px !important;
+}
+
+#findInput {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: var(--text-primary) !important;
+  border-radius: 10px !important;
+  padding: 8px 12px !important;
+  font-family: inherit !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s ease !important;
+  width: 100% !important;
+}
+
+#findInput:focus {
   border-color: var(--primary-color) !important;
-  box-shadow: 0 0 0 2px var(--primary-glow);
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(255, 137, 62, 0.15) !important;
+  outline: none !important;
+}
+
+#findPreviousButton,
+#findNextButton {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  padding: 8px !important;
+  transition: all 0.2s ease !important;
+  margin: 0 2px !important;
+}
+
+#findPreviousButton:hover,
+#findNextButton:hover {
+  background-color: rgba(255, 137, 62, 0.1) !important;
+  border-color: rgba(255, 137, 62, 0.2) !important;
+  color: var(--primary-color) !important;
+}
+
+/* Checkbox Styling inside Findbar */
+#findbar .toggleButton {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+  height: 28px !important;
+  /* Fixed height for better alignment context */
+}
+
+#findbar .toggleButton label {
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  transform: translateY(-8px) !important;
+}
+
+#findbar .toggleButton input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  margin: 0 10px 0 0 !important;
+  /* Slightly more gap for clarity */
+  flex-shrink: 0 !important;
+}
+
+#findbar .toggleButton input[type="checkbox"]:active {
+  transform: scale(0.85) !important;
+}
+
+#findbar .toggleButton input[type="checkbox"]:checked {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 8px var(--primary-glow);
+}
+
+#findbar .toggleButton input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%) scale(1);
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  animation: check-pop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes check-pop {
+  0% {
+    transform: translate(-50%, -55%) scale(0);
+  }
+
+  100% {
+    transform: translate(-50%, -55%) scale(1);
+  }
+}
+
+#findbar .toolbarLabel {
+  font-size: 0.85rem !important;
+  color: var(--text-secondary) !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  padding: 4px 8px !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+#findbar .toolbarLabel:hover {
+  color: var(--text-primary) !important;
+  background: rgba(255, 137, 62, 0.1) !important;
+  transform: translateX(4px);
+}
+
+#findbarMessageContainer {
+  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+  padding-top: 12px !important;
+  margin-top: 8px !important;
+}
+
+#findMsg {
+  color: var(--primary-color) !important;
+  font-weight: 500 !important;
 }
 
 /* --- Home Button Customization --- */
@@ -354,10 +1077,39 @@ textarea {
 /* Dialogs / Overlays */
 .dialog {
   background-color: var(--surface-color) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 137, 62, 0.15) !important;
   border-radius: 12px !important;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
   color: var(--text-primary) !important;
+}
+
+/* Custom Menus (Zoom, Secondary Toolbar) */
+.menu,
+.doorHanger,
+.doorHangerRight {
+  background-color: rgba(26, 26, 26, 0.9) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 137, 62, 0.1) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
+  color: var(--text-primary) !important;
+  overflow: hidden !important;
+}
+
+.menuContainer button.toolbarButton.labeled {
+  color: var(--text-primary) !important;
+  padding: 10px 16px !important;
+  border-radius: 8px !important;
+  margin: 2px 4px !important;
+  transition: all 0.2s ease !important;
+  text-align: left !important;
+  width: calc(100% - 8px) !important;
+}
+
+.menuContainer button.toolbarButton.labeled:hover {
+  background-color: rgba(255, 137, 62, 0.1) !important;
+  color: var(--primary-color) !important;
 }
 
 /* --- Editor Params Toolbar (Advanced Options) --- */
@@ -377,80 +1129,106 @@ textarea {
   display: none !important;
 }
 
-/* Sliders */
-/* Sliders */
+/* Sliders with filled progress track */
 .editorParamsToolbar input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 20px;
-  /* Height to container thumb */
+  height: 22px;
   background: transparent;
   outline: none;
-  margin: 4px 0;
+  margin: 6px 0;
   cursor: pointer;
   padding: 0;
+  --slider-progress: 50%;
 }
 
-/* WebKit Track */
+/* WebKit Track - with gradient for filled effect */
 .editorParamsToolbar input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 2px;
+  height: 5px;
+  background: linear-gradient(to right,
+      #FF893E 0%,
+      #ED452F var(--slider-progress),
+      rgba(255, 255, 255, 0.12) var(--slider-progress),
+      rgba(255, 255, 255, 0.12) 100%);
+  border-radius: 100px;
   border: none;
   cursor: pointer;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* WebKit Thumb */
 .editorParamsToolbar input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  height: 16px;
-  width: 16px;
+  height: 14px;
+  width: 14px;
   border-radius: 50%;
-  background: var(--primary-gradient);
-  cursor: pointer;
-  margin-top: -6px;
-  /* (4px track - 16px thumb) / 2 */
-  box-shadow: 0 0 10px var(--primary-glow);
-  border: 2px solid var(--surface-color);
-  /* Ring for contrast */
-  transition: transform 0.1s ease, box-shadow 0.2s ease;
+  background: linear-gradient(145deg, #FF893E 0%, #ED452F 100%);
+  cursor: grab;
+  margin-top: -5px;
+  box-shadow:
+    0 1px 4px rgba(237, 69, 47, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.editorParamsToolbar input[type="range"]::-webkit-slider-thumb:active {
+  cursor: grabbing;
 }
 
 .editorParamsToolbar input[type="range"]:focus::-webkit-slider-thumb,
-.editorParamsToolbar input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-  box-shadow: 0 0 15px var(--primary-glow);
+.editorParamsToolbar input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.15);
+  box-shadow:
+    0 2px 8px rgba(237, 69, 47, 0.5),
+    0 3px 12px rgba(0, 0, 0, 0.25);
 }
 
 /* Mozilla Track */
 .editorParamsToolbar input[type="range"]::-moz-range-track {
   width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 2px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 100px;
   border: none;
   cursor: pointer;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Mozilla Progress (filled portion - left side) */
+.editorParamsToolbar input[type="range"]::-moz-range-progress {
+  height: 5px;
+  background: linear-gradient(90deg, #FF893E 0%, #ED452F 100%);
+  border-radius: 100px 0 0 100px;
 }
 
 /* Mozilla Thumb */
 .editorParamsToolbar input[type="range"]::-moz-range-thumb {
-  height: 16px;
-  width: 16px;
-  border: 2px solid var(--surface-color);
+  height: 14px;
+  width: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
-  background: var(--primary-gradient);
-  cursor: pointer;
-  box-shadow: 0 0 10px var(--primary-glow);
-  transition: transform 0.1s ease, box-shadow 0.2s ease;
+  background: linear-gradient(145deg, #FF893E 0%, #ED452F 100%);
+  cursor: grab;
+  box-shadow:
+    0 1px 4px rgba(237, 69, 47, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.editorParamsToolbar input[type="range"]::-moz-range-thumb:active {
+  cursor: grabbing;
 }
 
 .editorParamsToolbar input[type="range"]:focus::-moz-range-thumb,
-.editorParamsToolbar input[type="range"]::-moz-range-thumb:hover {
-  transform: scale(1.2);
-  box-shadow: 0 0 15px var(--primary-glow);
+.editorParamsToolbar input[type="range"]:hover::-moz-range-thumb {
+  transform: scale(1.15);
+  box-shadow:
+    0 2px 8px rgba(237, 69, 47, 0.5),
+    0 3px 12px rgba(0, 0, 0, 0.25);
 }
 
 /* Color Pickers */
@@ -618,17 +1396,18 @@ textarea {
   align-items: center !important;
   justify-content: center !important;
   gap: 8px !important;
-  height: 32px !important;
+  height: 28px !important;
   width: auto !important;
   min-width: 140px !important;
   /* Slightly wider to be safe */
   cursor: pointer !important;
-  transition: all 0.2s ease !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
 }
 
 #customZoomButton:hover {
   background-color: rgba(255, 255, 255, 0.1) !important;
   border-color: var(--primary-color) !important;
+  transform: none !important;
 }
 
 #customZoomValue {
@@ -742,4 +1521,385 @@ body,
   height: 0 !important;
   width: 0 !important;
   background: transparent !important;
+}
+
+/* --- Native Dialog Theme (Simplified) --- */
+
+@keyframes dialog-enter {
+  0% {
+    opacity: 0;
+    transform: scale(1) translateY(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes backdrop-enter {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.dialog {
+  /* Simplified Variables */
+  --dialog-bg-color: #1E1E1E !important;
+  --dialog-border-color: rgba(255, 255, 255, 0.08) !important;
+  --dialog-shadow: 0 24px 48px rgba(0, 0, 0, 0.5) !important;
+  --text-primary-color: #FFFFFF !important;
+  --text-secondary-color: #AAAAAA !important;
+
+  background: var(--dialog-bg-color) !important;
+  border: 1px solid var(--dialog-border-color) !important;
+  border-radius: 20px !important;
+  /* Slightly reduced radius */
+  box-shadow: var(--dialog-shadow) !important;
+  color: var(--text-primary-color) !important;
+  font-family: 'Outfit', sans-serif !important;
+  padding: 2.5rem !important;
+  text-align: center !important;
+  max-width: 420px !important;
+  /* Slightly more compact */
+  width: 90% !important;
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  margin: 0 !important;
+  translate: -50% -50% !important;
+  overflow: hidden !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+@keyframes dialog-exit {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1) translateY(10px);
+  }
+}
+
+.dialog[open] {
+  animation: dialog-enter 0.2s ease-out forwards;
+}
+
+@keyframes backdrop-exit {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.dialog.closing {
+  animation: dialog-exit 0.15s ease-in forwards !important;
+}
+
+.dialog.closing::backdrop {
+  animation: backdrop-exit 0.15s ease-in forwards !important;
+}
+
+/* Remove Radial Gradient Overlay */
+.dialog::before {
+  display: none !important;
+}
+
+/* Dialog Backdrop */
+.dialog::backdrop {
+  background: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(4px) !important;
+  animation: backdrop-enter 0.2s ease-out forwards;
+  /* Fade in animation */
+}
+
+:is(.dialog .mainContainer) input[type="text"],
+:is(.dialog .mainContainer) input[type="password"],
+:is(.dialog .mainContainer) textarea {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 10px !important;
+  transition: all 0.2s ease !important;
+}
+
+:is(.dialog .mainContainer) input:focus,
+:is(.dialog .mainContainer) textarea:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.2) !important;
+  outline: none !important;
+}
+
+/* Buttons */
+:is(.dialog .mainContainer) button {
+  border-radius: 12px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  text-transform: none !important;
+  letter-spacing: 0.01em;
+  padding: 1.2rem 2rem !important;
+  /* Keep width, increase height via padding */
+  font-size: 1rem !important;
+  flex: 1 !important;
+  min-width: 100px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+/* Primary Button */
+.primaryButton,
+button.primaryButton,
+#passwordSubmit {
+  /* Simple solid color or very subtle gradient */
+  background: var(--primary-color) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: none !important;
+  /* Removed glow */
+}
+
+.primaryButton:hover,
+button.primaryButton:hover,
+#passwordSubmit:hover {
+  opacity: 0.9 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Secondary Button */
+.secondaryButton,
+button.secondaryButton,
+#passwordCancel,
+#documentPropertiesClose,
+#newAltTextNotNow {
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.2s ease !important;
+  /* Smooth hover transition */
+}
+
+.secondaryButton:hover,
+button.secondaryButton:hover,
+#passwordCancel:hover,
+#documentPropertiesClose:hover,
+#newAltTextNotNow:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-primary) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Destructive Action Button (Discard) looks simple by default */
+.destructiveButton {
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.destructiveButton:hover {
+  background: rgba(255, 77, 77, 0.1) !important;
+  color: #ff6b6b !important;
+  border-color: #ff6b6b !important;
+  box-shadow: none !important;
+}
+
+
+/* Radio Buttons */
+:is(:is(.dialog .mainContainer) .radio)>.radioButton input {
+  background-color: transparent !important;
+  border: 2px solid var(--text-secondary) !important;
+}
+
+:is(:is(:is(:is(.dialog .mainContainer) .radio) > .radioButton) input):checked {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+/* Close Button (if present separately) */
+.dialog .closeButton {
+  color: var(--text-secondary) !important;
+  background: transparent !important;
+}
+
+.dialog .closeButton:hover {
+  color: var(--text-primary) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Destructive Action Button */
+.destructiveButton {
+  color: #ff4d4d !important;
+  border-color: rgba(255, 77, 77, 0.4) !important;
+  background: rgba(255, 77, 77, 0.05) !important;
+}
+
+.destructiveButton:hover {
+  background: rgba(255, 77, 77, 0.15) !important;
+  border-color: #ff4d4d !important;
+}
+
+/* Transition Overlay Styles */
+#transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-color);
+  z-index: 200000;
+  opacity: 1;
+  pointer-events: all;
+  transition: opacity 0.3s ease;
+}
+
+#transition-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Modal Styles (Ported from Homepage) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 100001;
+  /* Higher than titlebar */
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal {
+  background: linear-gradient(180deg, var(--surface-color) 0%, #121212 100%);
+  padding: 2.5rem;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  border: 1px solid rgba(255, 137, 62, 0.15);
+  transform: translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  z-index: 101;
+}
+
+.modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(255, 137, 62, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+  border-radius: 24px;
+}
+
+.modal-overlay.active .modal {
+  transform: translateY(0);
+}
+
+.modal h2 {
+  margin-top: 0;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.modal p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+.btn-close {
+  margin-top: 1.5rem;
+  background: var(--surface-hover);
+  border: none;
+  color: var(--text-primary);
+  padding: 0.8rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.btn-close:hover {
+  background: #333;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-cancel {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-cancel:hover {
+  background: #333;
+}
+
+.btn-confirm {
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
+  box-shadow: 0 0px 15px rgba(255, 137, 62, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-confirm:hover {
+  opacity: 0.95;
+  box-shadow: 0 0 24px rgba(255, 137, 62, 0.5);
+  color: white !important;
 }
