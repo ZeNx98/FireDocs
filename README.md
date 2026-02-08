@@ -15,11 +15,10 @@
 
 ---
 
-### Why FireDocs?
-FireDocs is built for people who want a dedicated space for reading without the clutter of a web browser. It’s lightweight, privacy-focused, and stays out of your way.
+### What is FireDocs?
+FireDocs is a PDF viewer built for people who want a dedicated space for reading without the clutter of a web browser. It’s privacy-focused and stays out of your way.
 
 #### **Better than a Browser (PDF.js Improvements):**
-- **Lightweight** : Provides a native app feel with optimized performance.
 - **Native Experience** : No browser tabs, address bars, or distractions.
 - **Modern UI** : Optimized for focus, updated UI and styles.
 - **De-Cluttered Interface** : Removed trash features and unneeded buttons from the standard PDF.js for a more comfortable reading experience.
@@ -48,7 +47,7 @@ sudo apt install ./firedocs_2.1.0_amd64.deb
 **Arch Linux**
 Install FireDocs easily (PKGBUILD provided):
 ```bash
-makepkg -si
+yay -S firedocs
 ```
 
 #### **Windows**
