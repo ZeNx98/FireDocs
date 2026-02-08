@@ -44,6 +44,12 @@ sudo apt update
 sudo apt install ./firedocs_2.1.0_amd64.deb 
 ```
 
+**Fedora / Red Hat (.rpm)**
+```bash
+# Download the .rpm file and run:
+sudo dnf install ./firedocs-2.1.0.x86_64.rpm 
+```
+
 **Arch Linux**
 Install FireDocs easily (PKGBUILD provided):
 ```bash
@@ -51,10 +57,10 @@ yay -S firedocs
 ```
 
 #### **Windows**
-Download the installer from the **[latest release](https://github.com/ZeNx98/FireDocs/releases)**.
+Download the **FireDocs-Setup-2.1.0.exe** from the **[latest release](https://github.com/ZeNx98/FireDocs/releases)**.
 
 #### **macOS**
-Download the `.dmg` from the releases page, drag the **FireDocs** icon into your **Applications** folder.
+Download the **FireDocs-2.1.0-arm64.dmg** from the releases page, drag the **FireDocs** icon into your **Applications** folder.
 
 ---
 
